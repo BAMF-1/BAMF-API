@@ -14,17 +14,6 @@ public class User
     [Required]
     public required string PasswordSalt { get; set; }
 
-    public ICollection<CartItem> Cart { get; init; } = new List<CartItem>();
-}
-
-public class CartItem
-{
-    public int Id { get; set; }
-    public int ProductId { get; set; }
-    public int Quantity { get; set; }
-
-    // Foreign Key
-    public int UserId { get; set; }
-
-    public required User User { get; set; }
+    [MaxLength(255)]
+    public string Cart { get; set; } = "[]";
 }
