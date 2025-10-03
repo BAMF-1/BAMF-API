@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BAMF_API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d0dbeae158b999672d127fc41d9aff8050f5c0f1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+305c96bc8223e93e0c05b857aa1af7343bc643d0")]
 [assembly: System.Reflection.AssemblyProductAttribute("BAMF_API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BAMF_API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
