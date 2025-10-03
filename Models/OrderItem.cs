@@ -16,11 +16,11 @@ namespace BAMF_API.Models
         public int? VariantId { get; set; }
 
         [Required]
-        [Range(1, 10000, ErrorMessage = "Quantity must be at least 1.")]
+        [Range(1, 10000, ErrorMessage = "Quantity must be at least 1, and max 10,000.")]
         public int Quantity { get; set; }
 
         [Required]
-        [Range(0, 100000, ErrorMessage = "Unit price must be positive.")]
+        [Range(0, 100000, ErrorMessage = "Unit price must be positive, and under 100,000.")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal UnitPrice { get; set; }
 
