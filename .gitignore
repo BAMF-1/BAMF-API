@@ -36,3 +36,4 @@ packages/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+/BAMF_API/obj/Debug
