@@ -47,6 +47,10 @@ namespace BAMF_API.Data
                 .WithOne(i => i.Variant)
                 .HasForeignKey<Inventory>(i => i.VariantId);
 
+            modelBuilder.Entity<Order>()
+                .HasIndex(o => o.OrderNo)
+                .IsUnique();
+
             // Order ↔ OrderItem (1:N)
             modelBuilder.Entity<OrderItem>()
                 .HasOne(oi => oi.Order)
