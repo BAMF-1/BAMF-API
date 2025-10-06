@@ -25,3 +25,5 @@ namespace BAMF_API.Models
         public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
     }
 }
+
+// F.A
