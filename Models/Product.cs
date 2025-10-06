@@ -19,7 +19,7 @@ namespace BAMF_API.Models
         [MaxLength(1000)]
         public string? Description { get; set; }
 
-        [Column(TypeName = "json")]
+        [Column(TypeName = "nvarchar(max)")]
         public string? Specs { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]

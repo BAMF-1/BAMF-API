@@ -19,7 +19,7 @@ namespace BAMF_API.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal AdditionalPrice { get; set; } // Price adjustment from base product price
 
-        [Column(TypeName = "json")]
+        [Column(TypeName = "nvarchar(max)")]
         public string? Attributes { get; set; } // e.g. {"Color": "Red", "Size": "M"}
 
         // Navigation
