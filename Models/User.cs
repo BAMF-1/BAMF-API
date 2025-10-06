@@ -15,5 +15,5 @@ public class User
     public required string PasswordSalt { get; set; }
 
     [MaxLength(255)]
-    public string Cart { get; set; } = "[]";
+    public string Cart { get; set; } = "{}";
 }
