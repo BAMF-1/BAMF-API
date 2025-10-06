@@ -8,7 +8,7 @@ namespace BAMF_API.Models
         public int Id { get; set; }
 
         [Required]
-        [StringLength(20, ErrorMessage = "Order number cannot be longer than 20 characters.")]
+        [StringLength(50, ErrorMessage = "Order number cannot be longer than 30 characters.")]
         public string OrderNo { get; set; } = string.Empty;
 
         public int? UserId { get; set; } // optional user reference
@@ -33,4 +33,3 @@ namespace BAMF_API.Models
     }
 }
 
-// F.A
