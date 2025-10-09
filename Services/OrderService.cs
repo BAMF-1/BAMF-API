@@ -23,6 +23,16 @@ namespace BAMF_API.Services
             return await _orderRepo.GetByIdAsync(id);
         }
 
+        public async Task<IEnumerable<Order>?> GetOrderByOrderEmailAsync(string email)
+        {
+            return await _orderRepo.GetOrderByEmailAsync(email);
+        }
+
+        public async Task<Order?> GetOrderByOrderNoAsync(string orderNo)
+        {
+            return await _orderRepo.GetOrderByOrderNoAsync(orderNo);
+        }
+
         public async Task CreateOrderAsync(OrderCreateDto dto)
         {
             // TODO: Check for products existing before adding order, or it will throw error

@@ -29,6 +29,22 @@ public class OrdersController : ControllerBase
         return Ok(orders);
     }
 
+    [HttpGet("by-email/{email}")]
+    public async Task<IActionResult> GetOrderByEmail(string email)
+    {
+        var order = await _orderService.GetOrderByOrderEmailAsync(email);
+        if (order == null) return NotFound();
+        return Ok(order);
+    }
+
+    [HttpGet("by-orderNo/{orderNo}")]
+    public async Task<IActionResult> GetOrderByOrderNoAsync(string orderNo)
+    {
+        var order = await _orderService.GetOrderByOrderNoAsync(orderNo);
+        if (order == null) return NotFound();
+        return Ok(order);
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDto dto)
     {

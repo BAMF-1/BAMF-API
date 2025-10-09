@@ -5,6 +5,8 @@ namespace BAMF_API.Interfaces.OrderInterfaces
     public interface IOrderRepository
     {
         Task<Order?> GetByIdAsync(int id);
+        Task<IEnumerable<Order>?> GetOrderByEmailAsync(string email);
+        Task<Order?> GetOrderByOrderNoAsync(string orderNr);
         Task<IEnumerable<Order>> GetAllAsync();
         Task CreateAsync(Order order);
         Task UpdateAsync(Order order);
