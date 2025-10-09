@@ -1,8 +1,8 @@
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using BAMF_API.Data;
 using BAMF_API.DTOs.Responses;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BAMF_API.Controllers.Public;
 
@@ -10,8 +10,8 @@ namespace BAMF_API.Controllers.Public;
 [Route("api/categories")]
 public class CategoriesController : ControllerBase
 {
-    private readonly AppDbContext _db;
-    public CategoriesController(AppDbContext db) { _db = db; }
+    private readonly ApplicationDbContext _db;
+    public CategoriesController(ApplicationDbContext db) { _db = db; }
 
     [HttpGet]
     public async Task<IEnumerable<CategoryResponse>> Get(CancellationToken ct)

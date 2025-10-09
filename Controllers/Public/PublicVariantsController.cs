@@ -9,8 +9,8 @@ namespace BAMF_API.Controllers.Public;
 [Route("variants")]
 public class PublicVariantsController : ControllerBase
 {
-    private readonly AppDbContext _db;
-    public PublicVariantsController(AppDbContext db) { _db = db; }
+    private readonly ApplicationDbContext _db;
+    public PublicVariantsController(ApplicationDbContext db) { _db = db; }
 
     // /variants/{sku} -> redirect to /groups/{slug or objectId}?sku={sku}
     [HttpGet("{sku}")]
