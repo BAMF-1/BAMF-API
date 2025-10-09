@@ -1,25 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BAMF_API.Models
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace BAMF_API.Models;
+
+public class Category
 {
-    public class Category
-    {
-        public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
-        [Required, MaxLength(100)]
-        public required string Name { get; set; }
+    [Required, MaxLength(100)]
+    public string Name { get; set; } = null!;
 
-        [Required, MaxLength(100)]
-        public required string Slug { get; set; }
+    [Required, MaxLength(100)]
+    public string Slug { get; set; } = null!;
 
-        public int? ParentId { get; set; }
-
-        // Navigation
-        [ForeignKey("ParentId")]
-        public Category? Parent { get; set; }
-
-        public ICollection<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
-    }
+    public ICollection<ProductGroup> ProductGroups { get; set; } = new List<ProductGroup>();
 }
-

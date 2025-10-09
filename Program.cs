@@ -1,10 +1,12 @@
-
 using BAMF_API.Data;
 using BAMF_API.Interfaces.OrderInterfaces;
 using BAMF_API.Interfaces.ReviewInterfaces;
 using BAMF_API.Repositories;
 using BAMF_API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace BAMF_API
 {
@@ -24,20 +26,33 @@ namespace BAMF_API
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
 
-
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var app = builder.Build();
-
-            // Seed database
-            /*using (var scope = app.Services.CreateScope())
+            // JWT configuration
+            var jwt = builder.Configuration.GetSection("Jwt");
+            builder.Services.AddAuthentication(options =>
             {
-                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                db.Database.Migrate(); // ensures DB is created
-                db.SeedData();         // seeds initial data
-            }*/
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwt["Issuer"],
+                    ValidAudience = jwt["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!))
+                };
+            });
+
+            builder.Services.AddAuthorization();
+
+            var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
             {
@@ -46,8 +61,18 @@ namespace BAMF_API
             }
 
             app.UseHttpsRedirection();
+            app.UseAuthentication(); // Added from incoming branch
             app.UseAuthorization();
             app.MapControllers();
+
+            // Seed database
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                db.Database.Migrate(); // ensures DB is created/migrated
+                SeedData.EnsureSeeded(db); // seeds initial data using the new method
+            }
+
             app.Run();
         }
     }
