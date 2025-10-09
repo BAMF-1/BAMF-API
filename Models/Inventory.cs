@@ -1,21 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
 
-namespace BAMF_API.Models
+using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace BAMF_API.Models;
+
+public class Inventory
 {
-    public class Inventory
-    {
-        public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
-        [Required]
-        public int VariantId { get; set; }
+    public Guid VariantId { get; set; }
+    public Variant Variant { get; set; } = null!;
 
-        public bool InStock { get; set; } = true;
+    public int Quantity { get; set; } = 0;
+    public int LowStockThreshold { get; set; } = 0;
+    public DateTimeOffset? LastRestockDate { get; set; }
 
-        [Range(0, 100000)]
-        public int Amount { get; set; }
-
-        // Navigation
-        public Variant? Variant { get; set; }
-    }
+    public ICollection<InventoryTransaction> Transactions { get; set; } = new List<InventoryTransaction>();
 }
-

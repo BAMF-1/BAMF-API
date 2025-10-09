@@ -1,30 +1,31 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BAMF_API.Models
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace BAMF_API.Models;
+
+public class Variant
 {
-    public class Variant
-    {
-        public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
-        [Required]
-        public int ProductId { get; set; }
+    // SKU globally unique
+    [Required, MaxLength(100)]
+    public string Sku { get; set; } = null!;
 
-        [Required, MaxLength(100)]
-        public required string Name { get; set; }
+    [Required, MaxLength(60)]
+    public string Color { get; set; } = null!;
 
-        [Required, MaxLength(50)]
-        public required string Sku { get; set; } // Stock Keeping Unit identifier
+    [Required, MaxLength(60)]
+    public string Size { get; set; } = null!;
 
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal AdditionalPrice { get; set; } // Price adjustment from base product price
+    public decimal Price { get; set; }
 
-        [Column(TypeName = "nvarchar(max)")]
-        public string? Attributes { get; set; } // e.g. {"Color": "Red", "Size": "M"}
+    public Guid ProductGroupId { get; set; }
+    public ProductGroup ProductGroup { get; set; } = null!;
 
-        // Navigation
-        public Product? Product { get; set; }
-        public Inventory? Inventory { get; set; }
-    }
+    public bool IsDeleted { get; set; } = false;
+
+    public Inventory Inventory { get; set; } = null!;
+    public ICollection<VariantImage> VariantImages { get; set; } = new List<VariantImage>();
 }
-
