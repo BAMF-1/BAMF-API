@@ -12,10 +12,10 @@ namespace BAMF_API.Controllers.Public;
 [Route("api/products")]
 public class PublicProductsController : ControllerBase
 {
-    private readonly AppDbContext _db;
+    private readonly ApplicationDbContext _db;
     private readonly LinkGenerator _links;
 
-    public PublicProductsController(AppDbContext db, LinkGenerator links)
+    public PublicProductsController(ApplicationDbContext db, LinkGenerator links)
     {
         _db = db;
         _links = links;

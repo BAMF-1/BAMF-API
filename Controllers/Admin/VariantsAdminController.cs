@@ -13,9 +13,9 @@ namespace BAMF_API.Controllers.Admin;
 [Authorize(Roles = "Admin")]
 public class VariantsAdminController : ControllerBase
 {
-    private readonly AppDbContext _db;
+    private readonly ApplicationDbContext _db;
 
-    public VariantsAdminController(AppDbContext db) { _db = db; }
+    public VariantsAdminController(ApplicationDbContext db) { _db = db; }
 
     [HttpGet("by-group/{groupId:guid}")]
     public async Task<IActionResult> ByGroup(Guid groupId, CancellationToken ct)

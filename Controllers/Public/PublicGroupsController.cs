@@ -11,9 +11,9 @@ namespace BAMF_API.Controllers.Public;
 [Route("groups")]
 public class PublicGroupsController : ControllerBase
 {
-    private readonly AppDbContext _db;
+    private readonly ApplicationDbContext _db;
 
-    public PublicGroupsController(AppDbContext db) { _db = db; }
+    public PublicGroupsController(ApplicationDbContext db) { _db = db; }
 
     // GET /groups/{idOrSlug}
     [HttpGet("{idOrSlug}")]

@@ -10,7 +10,7 @@ public static class SeedData
 {
     public static object True { get; private set; }
 
-    public static void EnsureSeeded(AppDbContext db)
+    public static void EnsureSeeded(ApplicationDbContext db)
     {
         db.Database.Migrate();
 

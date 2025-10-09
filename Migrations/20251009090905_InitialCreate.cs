@@ -30,20 +30,13 @@ namespace BAMF_API.Migrations
                 name: "Categories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Slug = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: true)
+                    Slug = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Categories_Categories_ParentId",
-                        column: x => x.ParentId,
-                        principalTable: "Categories",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -52,7 +45,7 @@ namespace BAMF_API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    OrderNo = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -103,6 +96,30 @@ namespace BAMF_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductGroups",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ObjectId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Slug = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductGroups", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductGroups_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OrderItems",
                 columns: table => new
                 {
@@ -129,12 +146,14 @@ namespace BAMF_API.Migrations
                 name: "ProductCategories",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     ProductId = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductCategories", x => new { x.ProductId, x.CategoryId });
+                    table.PrimaryKey("PK_ProductCategories", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ProductCategories_Categories_CategoryId",
                         column: x => x.CategoryId,
@@ -194,37 +213,66 @@ namespace BAMF_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ColorImages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductGroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Color = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: false),
+                    AltText = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    IsPrimary = table.Column<bool>(type: "bit", nullable: false),
+                    SortOrder = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ColorImages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ColorImages_ProductGroups_ProductGroupId",
+                        column: x => x.ProductGroupId,
+                        principalTable: "ProductGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Variants",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Sku = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    AdditionalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Attributes = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Sku = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Color = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
+                    Size = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ProductGroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Variants", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Variants_ProductGroups_ProductGroupId",
+                        column: x => x.ProductGroupId,
+                        principalTable: "ProductGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Variants_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Inventories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    VariantId = table.Column<int>(type: "int", nullable: false),
-                    InStock = table.Column<bool>(type: "bit", nullable: false),
-                    Amount = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VariantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    LowStockThreshold = table.Column<int>(type: "int", nullable: false),
+                    LastRestockDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -237,10 +285,61 @@ namespace BAMF_API.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "VariantImages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VariantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: false),
+                    AltText = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    IsPrimary = table.Column<bool>(type: "bit", nullable: false),
+                    SortOrder = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VariantImages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VariantImages_Variants_VariantId",
+                        column: x => x.VariantId,
+                        principalTable: "Variants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InventoryTransactions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InventoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TransactionType = table.Column<int>(type: "int", nullable: false),
+                    QuantityChange = table.Column<int>(type: "int", nullable: false),
+                    ResultingQuantity = table.Column<int>(type: "int", nullable: true),
+                    ReferenceId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InventoryTransactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InventoryTransactions_Inventories_InventoryId",
+                        column: x => x.InventoryId,
+                        principalTable: "Inventories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
-                name: "IX_Categories_ParentId",
+                name: "IX_Categories_Slug",
                 table: "Categories",
-                column: "ParentId");
+                column: "Slug",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ColorImages_ProductGroupId",
+                table: "ColorImages",
+                column: "ProductGroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Inventories_VariantId",
@@ -249,14 +348,41 @@ namespace BAMF_API.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_InventoryTransactions_InventoryId",
+                table: "InventoryTransactions",
+                column: "InventoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_OrderId",
                 table: "OrderItems",
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Orders_OrderNo",
+                table: "Orders",
+                column: "OrderNo",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProductCategories_CategoryId",
                 table: "ProductCategories",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductCategories_ProductId",
+                table: "ProductCategories",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductGroups_CategoryId",
+                table: "ProductGroups",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductGroups_ObjectId",
+                table: "ProductGroups",
+                column: "ObjectId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductImages_ProductId",
@@ -269,9 +395,25 @@ namespace BAMF_API.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_VariantImages_VariantId",
+                table: "VariantImages",
+                column: "VariantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Variants_ProductGroupId",
+                table: "Variants",
+                column: "ProductGroupId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Variants_ProductId",
                 table: "Variants",
                 column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Variants_Sku",
+                table: "Variants",
+                column: "Sku",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -281,7 +423,10 @@ namespace BAMF_API.Migrations
                 name: "Admins");
 
             migrationBuilder.DropTable(
-                name: "Inventories");
+                name: "ColorImages");
+
+            migrationBuilder.DropTable(
+                name: "InventoryTransactions");
 
             migrationBuilder.DropTable(
                 name: "OrderItems");
@@ -299,16 +444,25 @@ namespace BAMF_API.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Variants");
+                name: "VariantImages");
+
+            migrationBuilder.DropTable(
+                name: "Inventories");
 
             migrationBuilder.DropTable(
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Variants");
+
+            migrationBuilder.DropTable(
+                name: "ProductGroups");
 
             migrationBuilder.DropTable(
                 name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
         }
     }
 }

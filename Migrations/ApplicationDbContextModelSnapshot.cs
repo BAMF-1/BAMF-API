@@ -46,32 +46,18 @@ namespace BAMF_API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Admins");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            PasswordHash = "hashedPassword",
-                            PasswordSalt = "salt",
-                            UserName = "admin"
-                        });
                 });
 
             modelBuilder.Entity("BAMF_API.Models.Category", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Slug")
                         .IsRequired()
@@ -80,42 +66,65 @@ namespace BAMF_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParentId");
+                    b.HasIndex("Slug")
+                        .IsUnique();
 
                     b.ToTable("Categories");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Electronics",
-                            Slug = "electronics"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Computers",
-                            ParentId = 1,
-                            Slug = "computers"
-                        });
+            modelBuilder.Entity("BAMF_API.Models.ColorImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AltText")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ProductGroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductGroupId");
+
+                    b.ToTable("ColorImages");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.Inventory", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastRestockDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("LowStockThreshold")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Amount")
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<bool>("InStock")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("VariantId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("VariantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -123,6 +132,37 @@ namespace BAMF_API.Migrations
                         .IsUnique();
 
                     b.ToTable("Inventories");
+                });
+
+            modelBuilder.Entity("BAMF_API.Models.InventoryTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("InventoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("QuantityChange")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReferenceId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ResultingQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("TransactionType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InventoryId");
+
+                    b.ToTable("InventoryTransactions");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.Order", b =>
@@ -241,36 +281,71 @@ namespace BAMF_API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Brand = "BrandX",
-                            CreatedUtc = new DateTime(2025, 10, 6, 12, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "High-end laptop",
-                            IsActive = true,
-                            Name = "Laptop",
-                            Popularity = 10,
-                            Price = 1499.99m,
-                            Sku = "LAP123",
-                            Specs = "{}"
-                        });
                 });
 
             modelBuilder.Entity("BAMF_API.Models.ProductCategory", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ProductId", "CategoryId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("ProductId");
+
                     b.ToTable("ProductCategories");
+                });
+
+            modelBuilder.Entity("BAMF_API.Models.ProductGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ObjectId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Slug")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ObjectId")
+                        .IsUnique();
+
+                    b.ToTable("ProductGroups");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.ProductImage", b =>
@@ -336,36 +411,78 @@ namespace BAMF_API.Migrations
 
             modelBuilder.Entity("BAMF_API.Models.Variant", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
 
-                    b.Property<decimal>("AdditionalPrice")
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Attributes")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("ProductGroupId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Size")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("Sku")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Sku")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductGroupId");
 
                     b.HasIndex("ProductId");
 
+                    b.HasIndex("Sku")
+                        .IsUnique();
+
                     b.ToTable("Variants");
+                });
+
+            modelBuilder.Entity("BAMF_API.Models.VariantImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AltText")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<Guid>("VariantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VariantId");
+
+                    b.ToTable("VariantImages");
                 });
 
             modelBuilder.Entity("User", b =>
@@ -398,13 +515,15 @@ namespace BAMF_API.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("BAMF_API.Models.Category", b =>
+            modelBuilder.Entity("BAMF_API.Models.ColorImage", b =>
                 {
-                    b.HasOne("BAMF_API.Models.Category", "Parent")
-                        .WithMany()
-                        .HasForeignKey("ParentId");
+                    b.HasOne("BAMF_API.Models.ProductGroup", "ProductGroup")
+                        .WithMany("ColorImages")
+                        .HasForeignKey("ProductGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Parent");
+                    b.Navigation("ProductGroup");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.Inventory", b =>
@@ -416,6 +535,17 @@ namespace BAMF_API.Migrations
                         .IsRequired();
 
                     b.Navigation("Variant");
+                });
+
+            modelBuilder.Entity("BAMF_API.Models.InventoryTransaction", b =>
+                {
+                    b.HasOne("BAMF_API.Models.Inventory", "Inventory")
+                        .WithMany("Transactions")
+                        .HasForeignKey("InventoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Inventory");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.OrderItem", b =>
@@ -432,7 +562,7 @@ namespace BAMF_API.Migrations
             modelBuilder.Entity("BAMF_API.Models.ProductCategory", b =>
                 {
                     b.HasOne("BAMF_API.Models.Category", "Category")
-                        .WithMany("ProductCategories")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -446,6 +576,17 @@ namespace BAMF_API.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("BAMF_API.Models.ProductGroup", b =>
+                {
+                    b.HasOne("BAMF_API.Models.Category", "Category")
+                        .WithMany("ProductGroups")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.ProductImage", b =>
@@ -470,18 +611,38 @@ namespace BAMF_API.Migrations
 
             modelBuilder.Entity("BAMF_API.Models.Variant", b =>
                 {
-                    b.HasOne("BAMF_API.Models.Product", "Product")
+                    b.HasOne("BAMF_API.Models.ProductGroup", "ProductGroup")
                         .WithMany("Variants")
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("ProductGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Product");
+                    b.HasOne("BAMF_API.Models.Product", null)
+                        .WithMany("Variants")
+                        .HasForeignKey("ProductId");
+
+                    b.Navigation("ProductGroup");
+                });
+
+            modelBuilder.Entity("BAMF_API.Models.VariantImage", b =>
+                {
+                    b.HasOne("BAMF_API.Models.Variant", "Variant")
+                        .WithMany("VariantImages")
+                        .HasForeignKey("VariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Variant");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.Category", b =>
                 {
-                    b.Navigation("ProductCategories");
+                    b.Navigation("ProductGroups");
+                });
+
+            modelBuilder.Entity("BAMF_API.Models.Inventory", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.Order", b =>
@@ -500,9 +661,19 @@ namespace BAMF_API.Migrations
                     b.Navigation("Variants");
                 });
 
+            modelBuilder.Entity("BAMF_API.Models.ProductGroup", b =>
+                {
+                    b.Navigation("ColorImages");
+
+                    b.Navigation("Variants");
+                });
+
             modelBuilder.Entity("BAMF_API.Models.Variant", b =>
                 {
-                    b.Navigation("Inventory");
+                    b.Navigation("Inventory")
+                        .IsRequired();
+
+                    b.Navigation("VariantImages");
                 });
 #pragma warning restore 612, 618
         }

@@ -13,9 +13,9 @@ namespace BAMF_API.Controllers.Admin;
 [Authorize(Roles = "Admin")]
 public class GroupsAdminController : ControllerBase
 {
-    private readonly AppDbContext _db;
+    private readonly ApplicationDbContext _db;
 
-    public GroupsAdminController(AppDbContext db) { _db = db; }
+    public GroupsAdminController(ApplicationDbContext db) { _db = db; }
 
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken ct) =>

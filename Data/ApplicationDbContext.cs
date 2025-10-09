@@ -10,8 +10,6 @@ namespace BAMF_API.Data
 
         // DbSets
         public DbSet<Admin> Admins { get; set; } = default!;
-        public DbSet<Category> Categories { get; set; } = default!;
-        public DbSet<Inventory> Inventories { get; set; } = default!;
         public DbSet<Order> Orders { get; set; } = default!;
         public DbSet<OrderItem> OrderItems { get; set; } = default!;
         public DbSet<Product> Products { get; set; } = default!;
@@ -19,33 +17,52 @@ namespace BAMF_API.Data
         public DbSet<ProductImage> ProductImages { get; set; } = default!;
         public DbSet<Review> Reviews { get; set; } = default!;
         public DbSet<User> Users { get; set; } = default!;
-        public DbSet<Variant> Variants { get; set; } = default!;
+        public DbSet<Category> Categories => Set<Category>();
+        public DbSet<ProductGroup> ProductGroups => Set<ProductGroup>();
+        public DbSet<Variant> Variants => Set<Variant>();
+        public DbSet<Inventory> Inventories => Set<Inventory>();
+        public DbSet<InventoryTransaction> InventoryTransactions => Set<InventoryTransaction>();
+        public DbSet<ColorImage> ColorImages => Set<ColorImage>();
+        public DbSet<VariantImage> VariantImages => Set<VariantImage>();
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Composite key for ProductCategory
-            modelBuilder.Entity<ProductCategory>()
-                .HasKey(pc => new { pc.ProductId, pc.CategoryId });
+            modelBuilder.Entity<Category>()
+                .HasIndex(c => c.Slug).IsUnique();
 
-            // Product ↔ ProductCategory
-            modelBuilder.Entity<ProductCategory>()
-                .HasOne(pc => pc.Product)
-                .WithMany(p => p.ProductCategories)
-                .HasForeignKey(pc => pc.ProductId);
+            modelBuilder.Entity<ProductGroup>()
+                .HasIndex(g => g.ObjectId).IsUnique();
 
-            // Category ↔ ProductCategory
-            modelBuilder.Entity<ProductCategory>()
-                .HasOne(pc => pc.Category)
-                .WithMany(c => c.ProductCategories)
-                .HasForeignKey(pc => pc.CategoryId);
+            modelBuilder.Entity<ProductGroup>()
+                .HasOne(g => g.Category)
+                .WithMany(c => c.ProductGroups)
+                .HasForeignKey(g => g.CategoryId);
 
-            // Variant ↔ Inventory (1:1)
             modelBuilder.Entity<Variant>()
-                .HasOne(v => v.Inventory)
-                .WithOne(i => i.Variant)
+                .HasIndex(v => v.Sku).IsUnique();
+
+            modelBuilder.Entity<Variant>()
+                .HasOne(v => v.ProductGroup)
+                .WithMany(g => g.Variants)
+                .HasForeignKey(v => v.ProductGroupId);
+
+            modelBuilder.Entity<Inventory>()
+                .HasOne(i => i.Variant)
+                .WithOne(v => v.Inventory)
                 .HasForeignKey<Inventory>(i => i.VariantId);
+
+            modelBuilder.Entity<ColorImage>()
+                .HasOne(ci => ci.ProductGroup)
+                .WithMany(pg => pg.ColorImages)
+                .HasForeignKey(ci => ci.ProductGroupId);
+
+            modelBuilder.Entity<VariantImage>()
+                .HasOne(vi => vi.Variant)
+                .WithMany(v => v.VariantImages)
+                .HasForeignKey(vi => vi.VariantId);
 
             modelBuilder.Entity<Order>()
                 .HasIndex(o => o.OrderNo)
@@ -56,53 +73,6 @@ namespace BAMF_API.Data
                 .HasOne(oi => oi.Order)
                 .WithMany(o => o.Items)
                 .HasForeignKey(oi => oi.OrderId);
-
-
-
-            // --- Seed Data ---
-            modelBuilder.Entity<Admin>().HasData(
-                new Admin
-                {
-                    Id = 1,
-                    UserName = "admin",
-                    PasswordHash = "hashedPassword",
-                    PasswordSalt = "salt"
-                }
-            );
-
-            modelBuilder.Entity<Category>().HasData(
-                new Category
-                {
-                    Id = 1,
-                    Name = "Electronics",
-                    Slug = "electronics",
-                    ParentId = null
-                },
-                new Category
-                {
-                    Id = 2,
-                    Name = "Computers",
-                    Slug = "computers",
-                    ParentId = 1
-                }
-            );
-
-            modelBuilder.Entity<Product>().HasData(
-                new Product
-                {
-                    Id = 1,
-                    Name = "Laptop",
-                    Sku = "LAP123",
-                    Brand = "BrandX",
-                    Description = "High-end laptop",
-                    Specs = "{}",
-                    Price = 1499.99m,
-                    CreatedUtc = new DateTime(2025, 10, 6, 12, 0, 0),
-                    UpdatedUtc = null,
-                    IsActive = true,
-                    Popularity = 10
-                }
-            );
         }
     }
 }

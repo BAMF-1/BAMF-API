@@ -4,11 +4,13 @@ namespace BAMF_API.Models
 {
     public class ProductCategory
     {
+        public int Id { get; set; }
+
         [Required]
         public int ProductId { get; set; }
 
         [Required]
-        public int CategoryId { get; set; }
+        public Guid CategoryId { get; set; }
 
         // Navigation
         public Product? Product { get; set; }

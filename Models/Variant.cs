@@ -1,7 +1,5 @@
-
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BAMF_API.Models;
 
@@ -19,6 +17,8 @@ public class Variant
     [Required, MaxLength(60)]
     public string Size { get; set; } = null!;
 
+    [Required, Range(0, int.MaxValue)]
+    [Column(TypeName = "decimal(18,2)")]
     public decimal Price { get; set; }
 
     public Guid ProductGroupId { get; set; }
