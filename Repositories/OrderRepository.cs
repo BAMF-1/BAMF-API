@@ -34,6 +34,21 @@ namespace BAMF_API.Repositories
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
+        public async Task<Order?> GetOrderByOrderNoAsync(string orderNr)
+        {
+            return await _context.Orders
+                .Include(o => o.Items)
+                .FirstOrDefaultAsync(o => o.OrderNo == orderNr);
+        }
+
+        public async Task<IEnumerable<Order>?> GetOrderByEmailAsync(string email)
+        {
+            return await _context.Orders
+                .Include(o => o.Items)
+                .Where(o => o.Email == email)
+                .ToListAsync();
+        }
+
         public async Task UpdateAsync(Order order)
         {
             _context.Orders.Update(order);
