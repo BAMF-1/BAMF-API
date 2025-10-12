@@ -1,4 +1,5 @@
 using BAMF_API.Data;
+using BAMF_API.Interfaces.AuthInterfaces;
 using BAMF_API.Interfaces.OrderInterfaces;
 using BAMF_API.Interfaces.ReviewInterfaces;
 using BAMF_API.Repositories;
@@ -25,6 +26,9 @@ namespace BAMF_API
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
