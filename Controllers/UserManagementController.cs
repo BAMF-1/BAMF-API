@@ -9,10 +9,10 @@ namespace BAMF_API.Controllers
     [Route("api/[controller]")]
     [Authorize(Roles = "Admin")]
 
-    public class AdminUsersController : ControllerBase
+    public class UserManagementController : ControllerBase
     {
         private readonly IUserService _userService;
-        public AdminUsersController(IUserService userService) => _userService = userService;
+        public UserManagementController(IUserService userService) => _userService = userService;
 
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _userService.GetAllUsersAsync());
