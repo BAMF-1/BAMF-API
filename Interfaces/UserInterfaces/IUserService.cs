@@ -19,3 +19,5 @@ namespace BAMF_API.Interfaces.UserInterfaces
         Task DeleteOwnAccountAsync(int id, UserDeleteDto dto);
     }
 }
+
+// M.B
