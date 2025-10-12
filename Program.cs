@@ -2,11 +2,13 @@ using BAMF_API.Data;
 using BAMF_API.Interfaces.AuthInterfaces;
 using BAMF_API.Interfaces.OrderInterfaces;
 using BAMF_API.Interfaces.ReviewInterfaces;
+using BAMF_API.Interfaces.UserInterfaces;
 using BAMF_API.Repositories;
 using BAMF_API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 namespace BAMF_API
@@ -26,13 +28,54 @@ namespace BAMF_API
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
+
             builder.Services.AddScoped<IAuthRepository, AuthRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
-
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+
+            // Swagger with JWT Auth
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "BAMF API",
+                    Version = "v1",
+                    Description = "Backend API for BAMF with Auth, Reviews, Orders, and Users"
+                });
+
+                //  Enable JWT Auth support
+                var securityScheme = new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Description = "Enter 'Bearer' followed by your JWT token. Example: Bearer eyJhbGciOiJIUzI1...",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT"
+                };
+
+                var securityRequirement = new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                };
+
+                options.AddSecurityDefinition("bearer", securityScheme);
+                options.AddSecurityRequirement(securityRequirement);
+            });
 
             // JWT configuration
             var jwt = builder.Configuration.GetSection("Jwt");
@@ -65,7 +108,7 @@ namespace BAMF_API
             }
 
             app.UseHttpsRedirection();
-            app.UseAuthentication(); // Added from incoming branch
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
 
@@ -73,8 +116,8 @@ namespace BAMF_API
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                db.Database.Migrate(); // ensures DB is created/migrated
-                SeedData.EnsureSeeded(db); // seeds initial data using the new method
+                db.Database.Migrate();
+                SeedData.EnsureSeeded(db);
             }
 
             app.Run();

@@ -17,3 +17,6 @@ public class User
     [MaxLength(255)]
     public string Cart { get; set; } = "{}";
 }
+
+
+// M.B
