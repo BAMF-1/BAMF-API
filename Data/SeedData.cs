@@ -1,6 +1,7 @@
-
 using System;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using BAMF_API.Models;
 
@@ -13,6 +14,30 @@ public static class SeedData
     public static void EnsureSeeded(ApplicationDbContext db)
     {
         db.Database.Migrate();
+
+        if (!db.Admins.Any())
+        {
+            CreatePasswordHash("Admin123!", out string hash, out string salt);
+            db.Admins.Add(new Admin
+            {
+                UserName = "admin",
+                PasswordHash = hash,
+                PasswordSalt = salt
+            });
+            db.SaveChanges();
+        }
+
+        if (!db.Users.Any())
+        {
+            CreatePasswordHash("User123!", out string hash, out string salt);
+            db.Users.Add(new User
+            {
+                Email = "user@example.com",
+                PasswordHash = hash,
+                PasswordSalt = salt
+            });
+            db.SaveChanges();
+        }
 
         if (db.Categories.Any())
         {
@@ -67,11 +92,18 @@ public static class SeedData
             db.SaveChanges();
 
             db.ColorImages.AddRange(
-                new ColorImage { ProductGroupId = group.Id, Color = "Red", Url = "https://picsum.photos/seed/red1/600/600", IsPrimary = TrueFalse(True=True) },
+                new ColorImage { ProductGroupId = group.Id, Color = "Red", Url = "https://picsum.photos/seed/red1/600/600", IsPrimary = TrueFalse(True = true) },
                 new ColorImage { ProductGroupId = group.Id, Color = "Red", Url = "https://picsum.photos/seed/red2/600/600", SortOrder = 1 }
             );
             db.SaveChanges();
         }
+    }
+
+    private static void CreatePasswordHash(string password, out string hash, out string salt)
+    {
+        using var hmac = new HMACSHA512();
+        salt = Convert.ToBase64String(hmac.Key);
+        hash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
     }
 
     private static bool TrueFalse(object value)
@@ -79,6 +111,5 @@ public static class SeedData
         throw new NotImplementedException();
     }
 
-    // helper to allow compile with constant
     private static bool TrueFalse(bool True = false) => True;
 }
