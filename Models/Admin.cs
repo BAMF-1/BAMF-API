@@ -17,3 +17,5 @@ namespace BAMF_API.Models
         public required string PasswordSalt { get; set; }
     }
 }
+
+// M.B
