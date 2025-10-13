@@ -1,9 +1,11 @@
 ﻿using BAMF_API.DTOs.Requests.ReviewDTOs;
 using BAMF_API.Interfaces.ReviewInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin,User")]
 public class ReviewsController : ControllerBase
 {
     private readonly IReviewService _reviewService;
@@ -14,6 +16,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous] // Everyone can see a specific review
     public async Task<IActionResult> GetReview(int id)
     {
         var review = await _reviewService.GetReviewAsync(id);
@@ -22,6 +25,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpGet("product/{productId}")]
+    [AllowAnonymous] // Everyone can see reviews for a product
     public async Task<IActionResult> GetReviewsByProductId(int productId)
     {
         var reviews = await _reviewService.GetReviewsByItemIdAsync(productId);
@@ -30,6 +34,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")] // Only Admins can see all reviews (Moderation)
     public async Task<IActionResult> GetAllReviews()
     {
         var reviews = await _reviewService.GetAllReviewsAsync();
@@ -38,6 +43,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpPost]
+    // Only authenticated users can create reviews
     public async Task<IActionResult> CreateReview([FromBody] ReviewCreateDto dto)
     {
         await _reviewService.CreateReviewAsync(dto);
@@ -45,13 +51,15 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateReviewStatus(int id, ReviewUpdateDto dto)
+    // Only Authenticated users can update reviews (Moderation and revisions)
+    public async Task<IActionResult> UpdateReview(int id, ReviewUpdateDto dto)
     {
         await _reviewService.UpdateReviewAsync(id, dto);
         return Ok("Updated");
     }
 
     [HttpDelete("{id}")]
+    // Only Authenticated users can update reviews (Moderation and revisions)
     public async Task<IActionResult> DeleteReview(int id)
     {
         await _reviewService.DeleteReviewAsync(id);
