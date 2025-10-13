@@ -1,9 +1,11 @@
 ﻿using BAMF_API.DTOs.Requests.OrderDTOs;
 using BAMF_API.Interfaces.OrderInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin,User")]
 public class OrdersController : ControllerBase
 {
     private readonly IOrderService _orderService;
@@ -14,6 +16,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    // Only authenticated users can see a specific order
     public async Task<IActionResult> GetOrder(int id)
     {
         var order = await _orderService.GetOrderAsync(id);
@@ -22,6 +25,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")] // Only Admins can see all orders
     public async Task<IActionResult> GetAllOrders()
     {
         var orders = await _orderService.GetAllOrdersAsync();
@@ -30,6 +34,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet("by-email/{email}")]
+    // Only authenticated users can see their orders by email
     public async Task<IActionResult> GetOrderByEmail(string email)
     {
         var order = await _orderService.GetOrderByOrderEmailAsync(email);
@@ -38,6 +43,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet("by-orderNo/{orderNo}")]
+    // Only authenticated users can see their orders by order number
     public async Task<IActionResult> GetOrderByOrderNoAsync(string orderNo)
     {
         var order = await _orderService.GetOrderByOrderNoAsync(orderNo);
@@ -46,6 +52,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPost]
+    // Only authenticated users can create orders
     public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDto dto)
     {
         await _orderService.CreateOrderAsync(dto);
@@ -53,6 +60,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")] // Only Admins can update orders (Status updates)
     public async Task<IActionResult> UpdateOrderStatus(int id, OrderUpdateDto dto)
     {
         await _orderService.UpdateOrderAsync(id, dto);
@@ -60,6 +68,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")] // Only Admins can delete orders
     public async Task<IActionResult> DeleteOrder(int id)
     {
         await _orderService.DeleteOrderAsync(id);

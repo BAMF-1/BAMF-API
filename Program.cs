@@ -103,6 +103,22 @@ namespace BAMF_API
 
             builder.Services.AddAuthorization();
 
+            // Add CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigins",
+                    policy =>
+                    {
+                        policy.WithOrigins(
+                            "http://localhost:3000",
+                            "https://localhost:7039"
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                    });
+            });
+
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
@@ -112,6 +128,7 @@ namespace BAMF_API
             }
 
             app.UseHttpsRedirection();
+            app.UseCors("AllowSpecificOrigins");
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
