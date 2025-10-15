@@ -12,7 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<ProductGroup> ProductGroups => Set<ProductGroup>();
     public DbSet<Variant> Variants => Set<Variant>();
     public DbSet<Inventory> Inventories => Set<Inventory>();
-    public DbSet<InventoryTransaction> InventoryTransactions => Set<InventoryTransaction>();
+    public DbSet<InventoryTransaction> InventoryTransactions => Set<InventoryTransaction>();\n    public DbSet<Order> Orders => Set<Order>();
     public DbSet<ColorImage> ColorImages => Set<ColorImage>();
     public DbSet<VariantImage> VariantImages => Set<VariantImage>();
 
@@ -49,9 +49,16 @@ public class AppDbContext : DbContext
             .WithMany(pg => pg.ColorImages)
             .HasForeignKey(ci => ci.ProductGroupId);
 
+
         modelBuilder.Entity<VariantImage>()
             .HasOne(vi => vi.Variant)
             .WithMany(v => v.VariantImages)
             .HasForeignKey(vi => vi.VariantId);
+
+        modelBuilder.Entity<Order>()
+            .HasMany(o => o.Lines)
+            .WithOne(l => l.Order)
+            .HasForeignKey(l => l.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
