@@ -12,5 +12,4 @@ namespace BAMF_API.Interfaces.OrderInterfaces
         Task UpdateAsync(Order order);
         Task DeleteAsync(int id);
     }
-
 }

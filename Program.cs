@@ -1,9 +1,12 @@
 using BAMF_API.Data;
+using BAMF_API.Interfaces;
 using BAMF_API.Interfaces.AdminInterfaces;
 using BAMF_API.Interfaces.AuthInterfaces;
 using BAMF_API.Interfaces.OrderInterfaces;
 using BAMF_API.Interfaces.ReviewInterfaces;
 using BAMF_API.Interfaces.UserInterfaces;
+using BAMF_API.Interfaces.InventoryInterfaces;
+using BAMF_API.Interfaces.ProductInterfaces;
 using BAMF_API.Repositories;
 using BAMF_API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -29,7 +32,14 @@ namespace BAMF_API
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<IInventoryService, InventoryService>();
 
+
+
+            builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
+            builder.Services.AddScoped<IInventoryTransactionRepository, InventoryTransactionRepository>();
+            builder.Services.AddScoped<IVariantRepository, VariantRepository>();
+            builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
             builder.Services.AddScoped<IAuthRepository, AuthRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();

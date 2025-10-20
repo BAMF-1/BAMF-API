@@ -14,7 +14,7 @@ namespace BAMF_API.Models
         [Required]
         public int ProductId { get; set; }
 
-        public int? VariantId { get; set; }
+        public Guid? VariantId { get; set; }
 
         [Required]
         [Range(1, 10000, ErrorMessage = "Quantity must be at least 1, and max 10,000.")]
