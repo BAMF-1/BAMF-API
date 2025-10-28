@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -8,13 +9,11 @@ namespace BAMF_API.Models
     {
         public int Id { get; set; }
 
-        [Required]
         public int OrderId { get; set; }
+        public Order? Order { get; set; }
 
-        [Required]
         public int ProductId { get; set; }
-
-        public Guid? VariantId { get; set; }
+        public Product? Product { get; set; }
 
         [Required]
         [Range(1, 10000, ErrorMessage = "Quantity must be at least 1, and max 10,000.")]
@@ -25,9 +24,9 @@ namespace BAMF_API.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal UnitPrice { get; set; }
 
-        // Navigation
-        [JsonIgnore]
-        public Order? Order { get; set; }
+        // Match Variant.Id (Guid). Make nullable if items may not have a variant.
+        public Guid? VariantId { get; set; }
+        public Variant? Variant { get; set; }
     }
 }
 

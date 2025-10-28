@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using BAMF_API.Interfaces.ProductInterfaces;
 using BAMF_API.Models;
-using BAMF_API.Data; // Your existing DbContext namespace
+using BAMF_API.Data;
 
 namespace BAMF_API.Repositories
 {
@@ -20,42 +20,44 @@ namespace BAMF_API.Repositories
             _dbContext = dbContext;
         }
 
-        // Create a new variant
+        // Create: adds to the DbContext (does not call SaveChanges; caller/service should SaveChangesAsync)
         public async Task AddAsync(Variant variant, CancellationToken ct = default)
         {
             await _dbContext.Variants.AddAsync(variant, ct);
         }
 
-        // Update an existing variant
+        // Update: attach/modify an entity (does not call SaveChanges)
         public void Update(Variant variant)
         {
             _dbContext.Variants.Update(variant);
         }
 
-        // Get a variant by SKU (active variants only)
+        // Get a variant by SKU (read-only)
         public async Task<Variant?> GetBySkuAsync(string sku, CancellationToken ct = default)
         {
             return await _dbContext.Variants
-                                   .AsNoTracking()               // read-only tracking
-                                   .FirstOrDefaultAsync(
-                                       v => v.Sku == sku && !v.IsDeleted,
-                                       ct
-                                   );
+                                   .AsNoTracking()
+                                   .FirstOrDefaultAsync(v => v.Sku == sku && !v.IsDeleted, ct);
         }
 
-        // Get a variant by SKU with its Inventory attached, if you need it
+        // Get a variant by SKU with its Inventory attached for modification (tracked)
         public async Task<Variant?> GetBySkuWithInventoryAsync(string sku, CancellationToken ct = default)
         {
             return await _dbContext.Variants
                                    .Include(v => v.Inventory)
-                                   .AsNoTracking()
-                                   .FirstOrDefaultAsync(
-                                       v => v.Sku == sku && !v.IsDeleted,
-                                       ct
-                                   );
+                                   .FirstOrDefaultAsync(v => v.Sku == sku && !v.IsDeleted, ct);
         }
 
-        // List all active variants in a product group
+        // If you need a read-only SKU+Inventory, call this instead
+        public async Task<Variant?> GetBySkuWithInventoryReadOnlyAsync(string sku, CancellationToken ct = default)
+        {
+            return await _dbContext.Variants
+                                   .Include(v => v.Inventory)
+                                   .AsNoTracking()
+                                   .FirstOrDefaultAsync(v => v.Sku == sku && !v.IsDeleted, ct);
+        }
+
+        // List all active variants in a product group (read-only)
         public async Task<List<Variant>> ListByGroupAsync(Guid productGroupId, CancellationToken ct = default)
         {
             return await _dbContext.Variants
@@ -64,7 +66,7 @@ namespace BAMF_API.Repositories
                                    .ToListAsync(ct);
         }
 
-        // Optional: admin-only methods to include deleted variants
+        // Admin helpers: include deleted
         public async Task<Variant?> GetBySkuIncludingDeletedAsync(string sku, CancellationToken ct = default)
         {
             return await _dbContext.Variants
@@ -78,6 +80,25 @@ namespace BAMF_API.Repositories
                                    .AsNoTracking()
                                    .Where(v => v.ProductGroupId == productGroupId)
                                    .ToListAsync(ct);
+        }
+
+        // Non-nullable overload required by the interface
+        public async Task<Variant?> GetByIdAsync(Guid id, CancellationToken ct = default)
+        {
+            return await _dbContext.Variants
+                                  .AsNoTracking()
+                                  .FirstOrDefaultAsync(v => v.Id == id && !v.IsDeleted, ct);
+        }
+
+        // Nullable overload (keeps callers that pass Guid? safe)
+        public async Task<Variant?> GetByIdAsync(Guid? id, CancellationToken ct = default)
+        {
+            if (!id.HasValue)
+                return null;
+
+            return await _dbContext.Variants
+                                  .AsNoTracking()
+                                  .FirstOrDefaultAsync(v => v.Id == id.Value && !v.IsDeleted, ct);
         }
     }
 }

@@ -1,19 +1,28 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace BAMF_API.Models 
-{ 
+namespace BAMF_API.Models
+{
     public class Inventory
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
+        // Must match Variant.Id (Guid)
         public Guid VariantId { get; set; }
-        public Variant Variant { get; set; } = null!;
+        public Variant? Variant { get; set; }
 
-        public int Quantity { get; set; } = 0;
-        public int LowStockThreshold { get; set; } = 0;
+        // On-hand quantity
+        public int Quantity { get; set; }
+
+        public int LowStockThreshold { get; set; }
         public DateTimeOffset? LastRestockDate { get; set; }
 
+        // Concurrency token for optimistic concurrency
+        [Timestamp]
+        public byte[]? RowVersion { get; set; }
+
+        // Navigation collection — required for explicit mapping
         public ICollection<InventoryTransaction> Transactions { get; set; } = new List<InventoryTransaction>();
     }
 }

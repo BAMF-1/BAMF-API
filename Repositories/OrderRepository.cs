@@ -17,7 +17,6 @@ namespace BAMF_API.Repositories
         public async Task CreateAsync(Order order)
         {
             await _context.Orders.AddAsync(order);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Order>> GetAllAsync()
@@ -51,8 +50,8 @@ namespace BAMF_API.Repositories
 
         public async Task UpdateAsync(Order order)
         {
-            _context.Orders.Update(order);
-            await _context.SaveChangesAsync();
+                _context.Orders.Update(order);
+                await Task.CompletedTask;
         }
 
         public async Task DeleteAsync(int id)
@@ -60,7 +59,6 @@ namespace BAMF_API.Repositories
             await _context.Orders
                 .Where(o => o.Id == id)
                 .ExecuteDeleteAsync();
-            await _context.SaveChangesAsync();
         }
     }
 }
