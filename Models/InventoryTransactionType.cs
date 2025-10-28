@@ -1,10 +1,11 @@
 // BAMF_API/Models/InventoryTransactionType.cs
 namespace BAMF_API.Models
 {
-	public enum InventoryTransactionType
+	public enum InventoryTransactionType : byte
 	{
-		Restock,
-		Sale,
-		Adjustment
+		Restock = 0,
+		Sale = 1,
+		Adjustment = 2,
+		Order = 3
 	}
 }

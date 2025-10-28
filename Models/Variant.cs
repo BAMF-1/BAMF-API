@@ -15,7 +15,7 @@ namespace BAMF_API.Models
         public string Color { get; set; } = null!;
 
         [Required, MaxLength(60)]
-        public string Size { get; set; } = null!;
+        public string Size { get; set; } = null!; 
 
         [Required, Range(0, int.MaxValue)]
         [Column(TypeName = "decimal(18,2)")]

@@ -14,6 +14,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Microsoft.AspNetCore.Diagnostics;
+using System.Text.Json;
+using BAMF_API.Exceptions;
 
 namespace BAMF_API
 {
@@ -34,8 +37,6 @@ namespace BAMF_API
             builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<IInventoryService, InventoryService>();
 
-
-
             builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
             builder.Services.AddScoped<IInventoryTransactionRepository, InventoryTransactionRepository>();
             builder.Services.AddScoped<IVariantRepository, VariantRepository>();
@@ -46,7 +47,6 @@ namespace BAMF_API
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IAdminRepository, AdminRepository>();
             builder.Services.AddScoped<IAdminService, AdminService>();
-
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -142,6 +142,51 @@ namespace BAMF_API
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
+
+            // Global exception handler: map NotFoundException -> 404, InsufficientStockException -> 409
+            app.UseExceptionHandler(builder =>
+            {
+                builder.Run(async context =>
+                {
+                    var feature = context.Features.Get<IExceptionHandlerFeature>();
+                    var ex = feature?.Error;
+
+                    if (ex is NotFoundException nfe)
+                    {
+                        context.Response.StatusCode = StatusCodes.Status404NotFound;
+                        context.Response.ContentType = "application/json";
+                        var payload = new
+                        {
+                            error = "NotFound",
+                            message = nfe.Message,
+                            resource = nfe.Resource,
+                            identifier = nfe.Identifier
+                        };
+                        await context.Response.WriteAsync(JsonSerializer.Serialize(payload));
+                        return;
+                    }
+
+                    if (ex is InsufficientStockException ise)
+                    {
+                        // Return 409 Conflict for out-of-stock situations (recommended)
+                        context.Response.StatusCode = StatusCodes.Status409Conflict;
+                        context.Response.ContentType = "application/json";
+                        var payload = new
+                        {
+                            error = "InsufficientStock",
+                            message = ise.Message,
+                            skuOrVariant = ise.SkuOrVariantId,
+                            requested = ise.Requested,
+                            available = ise.Available
+                        };
+                        await context.Response.WriteAsync(JsonSerializer.Serialize(payload));
+                        return;
+                    }
+
+                    // fallback: rethrow or handle as 500
+                    throw ex!;
+                });
+            });
 
             // Seed database
             using (var scope = app.Services.CreateScope())
