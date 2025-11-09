@@ -13,9 +13,14 @@ namespace BAMF_API.Services
             _ReviewRepo = ReviewRepo;
         }
 
-        public async Task<IEnumerable<Review>> GetAllReviewsAsync()
+        public async Task<IEnumerable<Review>> GetAllReviewsAsync(int page)
         {
-            return await _ReviewRepo.GetAllAsync();
+            return await _ReviewRepo.GetAllAsync(page);
+        }
+
+        public async Task<int> GetReviewsCountAsync()
+        {
+            return await _ReviewRepo.GetReviewsCountAsync();
         }
 
         public async Task<Review?> GetReviewAsync(int id)

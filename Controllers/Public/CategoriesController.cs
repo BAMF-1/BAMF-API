@@ -19,4 +19,11 @@ public class CategoriesController : ControllerBase
         var list = await _db.Categories.OrderBy(c => c.Name).ToListAsync(ct);
         return list.Select(c => new CategoryResponse { Id = c.Id, Name = c.Name, Slug = c.Slug });
     }
+
+    [HttpGet("count")]
+    public async Task<IActionResult> GetCount(CancellationToken ct)
+    {
+        var count = await _db.Categories.CountAsync(ct);
+        return Ok(new { count });
+    }
 }

@@ -1,4 +1,6 @@
 ﻿using BAMF_API.Data;
+using BAMF_API.DTOs.Responses;
+using BAMF_API.Extensions;
 using BAMF_API.Interfaces.UserInterfaces;
 using BAMF_API.Models;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +16,32 @@ namespace BAMF_API.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync() =>
-            await _context.Users.ToListAsync();
+        public async Task<IEnumerable<UserResponse>> GetAllAsync(int page) =>
+            await _context.Users
+                .Select(u => new UserResponse
+                {
+                    Id = u.Id,
+                    Email = u.Email,
+                    Cart = u.Cart
+                })
+                .Paginate(page)
+                .ToListAsync();
 
-        public async Task<User?> GetByIdAsync(int id) =>
+        public async Task<int> GetUserCountAsync() =>
+            await _context.Users.CountAsync();
+
+        public async Task<UserResponse?> GetByIdAsync(int id) =>
+            await _context.Users
+                .Where(u => u.Id == id)
+                .Select(u => new UserResponse
+                {
+                    Id = u.Id,
+                    Email = u.Email,
+                    Cart = u.Cart
+                })
+                .FirstOrDefaultAsync();
+
+        public async Task<User?> GetByIdFullAsync(int id) =>
             await _context.Users.FindAsync(id);
 
         public async Task UpdateAsync(User user)

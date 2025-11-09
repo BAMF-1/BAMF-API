@@ -1,10 +1,12 @@
 
+using BAMF_API.Data;
+using BAMF_API.DTOs.Requests;
+using BAMF_API.DTOs.Requests.AdminDashDTOs;
+using BAMF_API.Extensions;
+using BAMF_API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BAMF_API.Data;
-using BAMF_API.DTOs.Requests;
-using BAMF_API.Models;
 
 namespace BAMF_API.Controllers.Admin;
 
@@ -18,10 +20,30 @@ public class VariantsAdminController : ControllerBase
     public VariantsAdminController(ApplicationDbContext db) { _db = db; }
 
     [HttpGet("by-group/{groupId:guid}")]
-    public async Task<IActionResult> ByGroup(Guid groupId, CancellationToken ct)
+    public async Task<IActionResult> ByGroup(Guid groupId, int page, CancellationToken ct)
     {
-        var v = await _db.Variants.Where(x => x.ProductGroupId == groupId).Include(x => x.Inventory).ToListAsync(ct);
+        var v = await _db.Variants
+            .Where(x => x.ProductGroupId == groupId)
+            .Select(x => new VariantDto
+            {
+                Id = x.Id,
+                Sku = x.Sku,
+                Color = x.Color,
+                Size = x.Size,
+                Price = x.Price,
+                InventoryQuantity = x.Inventory.Quantity
+            })
+            .Paginate(page)
+            .ToListAsync(ct);
+
         return Ok(v);
+    }
+
+    [HttpGet("by-group/count")]
+    public async Task<IActionResult> CountByGroup(Guid groupId, CancellationToken ct)
+    {
+        var count = await _db.Variants.CountAsync(x => x.ProductGroupId == groupId, ct);
+        return Ok(new { Count = count });
     }
 
     [HttpPost]
@@ -65,7 +87,7 @@ public class VariantsAdminController : ControllerBase
     {
         var v = await _db.Variants.FindAsync(new object?[] { id }, ct);
         if (v == null) return NotFound();
-        v.IsDeleted = TrueFalse(True:true);
+        v.IsDeleted = TrueFalse(True: true);
         await _db.SaveChangesAsync(ct);
         return NoContent();
     }
@@ -91,5 +113,5 @@ public class VariantsAdminController : ControllerBase
         return NoContent();
     }
 
-    private static bool TrueFalse(bool True=false) => True;
+    private static bool TrueFalse(bool True = false) => True;
 }
