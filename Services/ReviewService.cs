@@ -52,9 +52,13 @@ namespace BAMF_API.Services
             var existingReview = await _ReviewRepo.GetByIdAsync(id);
             if (existingReview == null)
                 throw new Exception("Review not found");
-            existingReview.Rating = dto.Rating;
+            if (existingReview.Rating != dto.Rating)
+                existingReview.Rating = dto.Rating;
             if (!string.IsNullOrWhiteSpace(dto.Comment))
                 existingReview.Comment = dto.Comment;
+            if (!string.IsNullOrEmpty(dto.Title))
+                existingReview.Title = dto.Title;
+            existingReview.UpdatedUtc = DateTime.UtcNow;
             await _ReviewRepo.UpdateAsync(existingReview);
         }
 

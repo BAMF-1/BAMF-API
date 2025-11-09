@@ -31,7 +31,8 @@ public class VariantsAdminController : ControllerBase
                 Color = x.Color,
                 Size = x.Size,
                 Price = x.Price,
-                InventoryQuantity = x.Inventory.Quantity
+                InventoryQuantity = x.Inventory.Quantity,
+                LastRestockDate = x.Inventory.LastRestockDate,
             })
             .Paginate(page)
             .ToListAsync(ct);
@@ -97,9 +98,24 @@ public class VariantsAdminController : ControllerBase
     {
         var v = await _db.Variants.Include(x => x.Inventory).FirstOrDefaultAsync(x => x.Id == id, ct);
         if (v == null) return NotFound();
+
+        // ADD THIS: Check if Inventory exists
+        if (v.Inventory == null)
+        {
+            return BadRequest("Inventory not found for this variant");
+        }
+
+        // Update quantity
         v.Inventory.Quantity += req.Delta;
+
+        // Update last restock date
         if (req.TransactionType == InventoryTransactionType.Restock && req.Delta > 0)
+        {
             v.Inventory.LastRestockDate = DateTimeOffset.UtcNow;
+        }
+
+        // ADD THIS: Mark as modified explicitly
+        _db.Entry(v.Inventory).Property(x => x.LastRestockDate).IsModified = true;
 
         _db.InventoryTransactions.Add(new InventoryTransaction
         {
@@ -109,8 +125,16 @@ public class VariantsAdminController : ControllerBase
             ResultingQuantity = v.Inventory.Quantity,
             ReferenceId = req.ReferenceId
         });
+
         await _db.SaveChangesAsync(ct);
-        return NoContent();
+
+        // ADD THIS: Return the updated inventory to verify
+        return Ok(new
+        {
+            success = true,
+            lastRestockDate = v.Inventory.LastRestockDate,
+            quantity = v.Inventory.Quantity
+        });
     }
 
     private static bool TrueFalse(bool True = false) => True;
