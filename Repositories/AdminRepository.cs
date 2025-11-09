@@ -1,4 +1,6 @@
 ﻿using BAMF_API.Data;
+using BAMF_API.DTOs.Responses;
+using BAMF_API.Extensions;
 using BAMF_API.Interfaces.AdminInterfaces;
 using BAMF_API.Models;
 using Microsoft.EntityFrameworkCore;
@@ -14,14 +16,41 @@ namespace BAMF_API.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Admin>> GetAllAsync() =>
-            await _context.Admins.ToListAsync();
+        public async Task<IEnumerable<AdminResponse>> GetAllAsync(int page) =>
+            await _context.Admins
+                .Select(a => new AdminResponse
+                {
+                    Id = a.Id,
+                    UserName = a.UserName
+                })
+                .Paginate(page)
+                .ToListAsync();
 
-        public async Task<Admin?> GetByIdAsync(int id) =>
+        public async Task<int> GetAdminCountAsync() =>
+            await _context.Admins.CountAsync();
+
+        public async Task<AdminResponse?> GetByIdAsync(int id) =>
+            await _context.Admins
+                .Where(a => a.Id == id)
+                .Select(a => new AdminResponse
+                {
+                    Id = a.Id,
+                    UserName = a.UserName
+                })
+                .FirstOrDefaultAsync();
+
+        public async Task<Admin?> GetByIdFullAsync(int id) =>
             await _context.Admins.FindAsync(id);
 
-        public async Task<Admin?> GetByUserNameAsync(string username) =>
-            await _context.Admins.FirstOrDefaultAsync(a => a.UserName == username);
+        public async Task<AdminResponse?> GetByUserNameAsync(string username) =>
+            await _context.Admins
+                .Where(a => a.UserName == username)
+                .Select(a => new AdminResponse
+                {
+                    Id = a.Id,
+                    UserName = a.UserName
+                })
+                .FirstOrDefaultAsync();
 
         public async Task AddAsync(Admin admin)
         {

@@ -1,4 +1,5 @@
-﻿using BAMF_API.Interfaces.AdminInterfaces;
+﻿using BAMF_API.DTOs.Responses;
+using BAMF_API.Interfaces.AdminInterfaces;
 using BAMF_API.Models;
 using System.Security.Cryptography;
 using System.Text;
@@ -14,11 +15,17 @@ namespace BAMF_API.Services
             _adminRepository = adminRepository;
         }
 
-        public async Task<IEnumerable<Admin>> GetAllAdminsAsync() =>
-            await _adminRepository.GetAllAsync();
+        public async Task<IEnumerable<AdminResponse>> GetAllAdminsAsync(int page) =>
+            await _adminRepository.GetAllAsync(page);
 
-        public async Task<Admin?> GetAdminByIdAsync(int id) =>
+        public async Task<int> GetAdminCountAsync() =>
+            await _adminRepository.GetAdminCountAsync();
+
+        public async Task<AdminResponse?> GetAdminByIdAsync(int id) =>
             await _adminRepository.GetByIdAsync(id);
+
+        public async Task<Admin?> GetAdminByIdFullAsync(int id) =>
+            await _adminRepository.GetByIdFullAsync(id);
 
         public async Task CreateAdminAsync(string username, string password)
         {
@@ -39,7 +46,7 @@ namespace BAMF_API.Services
 
         public async Task UpdateAdminPasswordAsync(int id, string currentPassword, string newPassword)
         {
-            var admin = await _adminRepository.GetByIdAsync(id);
+            var admin = await _adminRepository.GetByIdFullAsync(id);
             if (admin == null) throw new Exception("Admin not found");
 
             if (!VerifyPassword(currentPassword, admin.PasswordHash, admin.PasswordSalt))
@@ -53,7 +60,7 @@ namespace BAMF_API.Services
 
         public async Task DeleteAdminAsync(int id, string confirmPassword)
         {
-            var admin = await _adminRepository.GetByIdAsync(id);
+            var admin = await _adminRepository.GetByIdFullAsync(id);
             if (admin == null) throw new Exception("Admin not found");
 
             if (!VerifyPassword(confirmPassword, admin.PasswordHash, admin.PasswordSalt))

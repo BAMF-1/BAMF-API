@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -10,6 +9,8 @@ namespace BAMF_API.Models
         public int Id { get; set; }
 
         public int OrderId { get; set; }
+
+        [JsonIgnore]
         public Order? Order { get; set; }
 
         public int ProductId { get; set; }
