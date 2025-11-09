@@ -17,10 +17,17 @@ namespace BAMF_API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(int page = 1)
         {
-            var admins = await _adminService.GetAllAdminsAsync();
+            var admins = await _adminService.GetAllAdminsAsync(page);
             return Ok(admins);
+        }
+
+        [HttpGet("count")]
+        public async Task<IActionResult> GetCount()
+        {
+            var count = await _adminService.GetAdminCountAsync();
+            return Ok(new { count });
         }
 
         [HttpGet("{id}")]

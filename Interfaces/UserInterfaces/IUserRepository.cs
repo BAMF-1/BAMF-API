@@ -1,13 +1,14 @@
-﻿using BAMF_API.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using BAMF_API.DTOs.Responses;
+using BAMF_API.Models;
 
 namespace BAMF_API.Interfaces.UserInterfaces
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<User>> GetAllAsync();
-        Task<User?> GetByIdAsync(int id);
+        Task<IEnumerable<UserResponse>> GetAllAsync(int page);
+        Task<int> GetUserCountAsync();
+        Task<UserResponse?> GetByIdAsync(int id);
+        Task<User?> GetByIdFullAsync(int id);
         Task UpdateAsync(User user);
         Task DeleteAsync(User user);
         Task SaveChangesAsync();

@@ -26,11 +26,19 @@ public class OrdersController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Admin")] // Only Admins can see all orders
-    public async Task<IActionResult> GetAllOrders()
+    public async Task<IActionResult> GetAllOrders(int page)
     {
-        var orders = await _orderService.GetAllOrdersAsync();
+        var orders = await _orderService.GetAllOrdersAsync(page);
         if (orders == null) return NotFound("There are no orders registered");
         return Ok(orders);
+    }
+
+    [HttpGet("count")]
+    [Authorize(Roles = "Admin")] // Only Admins can see order count
+    public async Task<IActionResult> GetOrderCount()
+    {
+        var count = await _orderService.GetOrdersCountAsync();
+        return Ok(new { count });
     }
 
     [HttpGet("by-email/{email}")]

@@ -8,7 +8,8 @@ namespace BAMF_API.Interfaces.OrderInterfaces
         Task<Order?> GetOrderAsync(int id);
         Task<IEnumerable<Order>?> GetOrderByOrderEmailAsync(string email);
         Task<Order?> GetOrderByOrderNoAsync(string orderNr);
-        Task<IEnumerable<Order>> GetAllOrdersAsync();
+        Task<IEnumerable<Order>> GetAllOrdersAsync(int page);
+        Task<int> GetOrdersCountAsync();
         Task CreateOrderAsync(OrderCreateDto dto);
         Task UpdateOrderAsync(int id, OrderUpdateDto dto);
         Task DeleteOrderAsync(int id);

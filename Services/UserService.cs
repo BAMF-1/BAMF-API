@@ -1,4 +1,6 @@
-﻿using BAMF_API.DTOs.Requests.User;
+﻿using BAMF_API.DTOs.Requests.AdminDashDTOs;
+using BAMF_API.DTOs.Requests.User;
+using BAMF_API.DTOs.Responses;
 using BAMF_API.Interfaces.UserInterfaces;
 using BAMF_API.Models;
 using System.Security.Cryptography;
@@ -16,33 +18,45 @@ namespace BAMF_API.Services
         }
 
         // Admin functions
-        public async Task<IEnumerable<User>> GetAllUsersAsync() => await _userRepository.GetAllAsync();
+        public async Task<IEnumerable<UserResponse>> GetAllUsersAsync(int page) => await _userRepository.GetAllAsync(page);
 
-        public async Task<User?> GetUserByIdAsync(int id) => await _userRepository.GetByIdAsync(id);
+        public async Task<int> GetUserCountAsync() => await _userRepository.GetUserCountAsync();
 
-        public async Task UpdateUserAsync(int id, User updatedUser)
+        public async Task<UserResponse?> GetUserByIdAsync(int id) => await _userRepository.GetByIdAsync(id);
+
+        public async Task UpdateUserAsync(int id, UpdateUserDto updatedUser)
         {
-            var existing = await _userRepository.GetByIdAsync(id);
+            var existing = await _userRepository.GetByIdFullAsync(id);
             if (existing == null) throw new Exception("User not found");
 
-            existing.Email = updatedUser.Email;
+            if (updatedUser.Email != null)
+            {
+                existing.Email = updatedUser.Email;
+            }
+            if (updatedUser.NewPassword != null)
+            {
+                CreatePasswordHash(updatedUser.NewPassword, out var newHash, out var newSalt);
+                existing.PasswordHash = newHash;
+                existing.PasswordSalt = newSalt;
+            }
+
             await _userRepository.UpdateAsync(existing);
         }
 
         public async Task DeleteUserAsync(int id)
         {
-            var existing = await _userRepository.GetByIdAsync(id);
+            var existing = await _userRepository.GetByIdFullAsync(id);
             if (existing == null) throw new Exception("User not found");
             await _userRepository.DeleteAsync(existing);
         }
 
         // profile functions
         public async Task<User?> GetOwnProfileAsync(int id) =>
-            await _userRepository.GetByIdAsync(id);
+            await _userRepository.GetByIdFullAsync(id);
 
         public async Task UpdateOwnProfileAsync(int id, UserUpdateDto dto)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userRepository.GetByIdFullAsync(id);
             if (user == null) throw new Exception("User not found");
 
             user.Email = dto.Email;
@@ -62,7 +76,7 @@ namespace BAMF_API.Services
 
         public async Task DeleteOwnAccountAsync(int id, UserDeleteDto dto)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userRepository.GetByIdFullAsync(id);
             if (user == null) throw new Exception("User not found");
 
             if (!VerifyPassword(dto.Password, user.PasswordHash, user.PasswordSalt))

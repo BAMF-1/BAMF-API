@@ -1,4 +1,5 @@
 ﻿using BAMF_API.Data;
+using BAMF_API.Extensions;
 using BAMF_API.Interfaces.ReviewInterfaces;
 using BAMF_API.Models;
 using Microsoft.EntityFrameworkCore;
@@ -20,9 +21,16 @@ namespace BAMF_API.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Review>> GetAllAsync()
+        public async Task<IEnumerable<Review>> GetAllAsync(int page)
         {
-            return await _context.Reviews.ToListAsync();
+            return await _context.Reviews
+                .Paginate(page)
+                .ToListAsync();
+        }
+
+        public async Task<int> GetReviewsCountAsync()
+        {
+            return await _context.Reviews.CountAsync();
         }
 
         public async Task<Review?> GetByIdAsync(int id)

@@ -35,11 +35,19 @@ public class ReviewsController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Admin")] // Only Admins can see all reviews (Moderation)
-    public async Task<IActionResult> GetAllReviews()
+    public async Task<IActionResult> GetAllReviews(int page)
     {
-        var reviews = await _reviewService.GetAllReviewsAsync();
+        var reviews = await _reviewService.GetAllReviewsAsync(page);
         if (reviews == null) return NotFound("There are no reviews registered");
         return Ok(reviews);
+    }
+
+    [HttpGet("count")]
+    [Authorize(Roles = "Admin")] // Only Admins can see review count of all items
+    public async Task<IActionResult> GetReviewCount()
+    {
+        var count = await _reviewService.GetReviewsCountAsync();
+        return Ok(new { count });
     }
 
     [HttpPost]

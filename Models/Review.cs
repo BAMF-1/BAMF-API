@@ -23,6 +23,9 @@ namespace BAMF_API.Models
 
         [DataType(DataType.DateTime)]
         public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
+
+        [DataType(DataType.DateTime)]
+        public DateTime? UpdatedUtc { get; set; } = null;
     }
 }
 
