@@ -1,10 +1,10 @@
 ﻿using BAMF_API.DTOs.Requests.OrderDTOs;
-using BAMF_API.Interfaces.OrderInterfaces;
-using BAMF_API.Interfaces.InventoryInterfaces;
-using BAMF_API.Interfaces.ProductInterfaces;
-using BAMF_API.Interfaces;
-using BAMF_API.Models;
 using BAMF_API.Exceptions;
+using BAMF_API.Interfaces;
+using BAMF_API.Interfaces.InventoryInterfaces;
+using BAMF_API.Interfaces.OrderInterfaces;
+using BAMF_API.Interfaces.ProductInterfaces;
+using BAMF_API.Models;
 
 namespace BAMF_API.Services
 {
@@ -27,9 +27,14 @@ namespace BAMF_API.Services
             _uow = uow;
         }
 
-        public async Task<IEnumerable<Order>> GetAllOrdersAsync()
+        public async Task<IEnumerable<Order>> GetAllOrdersAsync(int page)
         {
-            return await _orderRepo.GetAllAsync();
+            return await _orderRepo.GetAllAsync(page);
+        }
+
+        public async Task<int> GetOrdersCountAsync()
+        {
+            return await _orderRepo.GetOrdersCountAsync();
         }
 
         public async Task<Order?> GetOrderAsync(int id)

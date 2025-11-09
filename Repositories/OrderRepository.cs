@@ -1,4 +1,5 @@
 ﻿using BAMF_API.Data;
+using BAMF_API.Extensions;
 using BAMF_API.Interfaces.OrderInterfaces;
 using BAMF_API.Models;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +20,17 @@ namespace BAMF_API.Repositories
             await _context.Orders.AddAsync(order);
         }
 
-        public async Task<IEnumerable<Order>> GetAllAsync()
+        public async Task<IEnumerable<Order>> GetAllAsync(int page)
         {
             return await _context.Orders
                 .Include(o => o.Items)
+                .Paginate(page)
                 .ToListAsync();
+        }
+
+        public async Task<int> GetOrdersCountAsync()
+        {
+            return await _context.Orders.CountAsync();
         }
 
         public async Task<Order?> GetByIdAsync(int id)
@@ -50,8 +57,8 @@ namespace BAMF_API.Repositories
 
         public async Task UpdateAsync(Order order)
         {
-                _context.Orders.Update(order);
-                await Task.CompletedTask;
+            _context.Orders.Update(order);
+            await Task.CompletedTask;
         }
 
         public async Task DeleteAsync(int id)

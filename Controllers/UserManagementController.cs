@@ -1,5 +1,5 @@
-﻿using BAMF_API.Interfaces.UserInterfaces;
-using BAMF_API.Models;
+﻿using BAMF_API.DTOs.Requests.AdminDashDTOs;
+using BAMF_API.Interfaces.UserInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +15,14 @@ namespace BAMF_API.Controllers
         public UserManagementController(IUserService userService) => _userService = userService;
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _userService.GetAllUsersAsync());
+        public async Task<IActionResult> GetAll(int page) => Ok(await _userService.GetAllUsersAsync(page));
+
+        [HttpGet("count")]
+        public async Task<IActionResult> GetCount()
+        {
+            var count = await _userService.GetUserCountAsync();
+            return Ok(new { count });
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -25,7 +32,7 @@ namespace BAMF_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] User updatedUser)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto updatedUser)
         {
             await _userService.UpdateUserAsync(id, updatedUser);
             return Ok("User updated");

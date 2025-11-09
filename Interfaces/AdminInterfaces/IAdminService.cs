@@ -1,13 +1,14 @@
-﻿using BAMF_API.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using BAMF_API.DTOs.Responses;
+using BAMF_API.Models;
 
 namespace BAMF_API.Interfaces.AdminInterfaces
 {
     public interface IAdminService
     {
-        Task<IEnumerable<Admin>> GetAllAdminsAsync();
-        Task<Admin?> GetAdminByIdAsync(int id);
+        Task<IEnumerable<AdminResponse>> GetAllAdminsAsync(int page);
+        Task<int> GetAdminCountAsync();
+        Task<AdminResponse?> GetAdminByIdAsync(int id);
+        Task<Admin?> GetAdminByIdFullAsync(int id);
         Task CreateAdminAsync(string username, string password);
         Task UpdateAdminPasswordAsync(int id, string currentPassword, string newPassword);
         Task DeleteAdminAsync(int id, string confirmPassword);
