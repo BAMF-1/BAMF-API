@@ -1,5 +1,6 @@
 using BAMF_API.Data;
 using BAMF_API.DTOs.Requests;
+using BAMF_API.DTOs.Requests.AdminDashDTOs;
 using BAMF_API.DTOs.Requests.GroupDTOs;
 using BAMF_API.Extensions;
 using BAMF_API.Models;
@@ -70,10 +71,26 @@ namespace BAMF_API.Controllers.Admin
                 CategoryId = req.CategoryId,
                 Slug = GenerateSlug(req.Name)
             };
+
             _db.ProductGroups.Add(group);
             await _db.SaveChangesAsync(ct);
-            return CreatedAtAction(nameof(GetAll), new { id = group.Id }, group);
+
+            // Map to DTO
+            var dto = new ProductGroupDtoAdmin
+            {
+                Id = group.Id,
+                ObjectId = group.ObjectId,
+                Name = group.Name,
+                Slug = group.Slug,
+                CategoryId = group.CategoryId,
+                IsDeleted = group.IsDeleted,
+                CreatedAt = group.CreatedAt,
+                UpdatedAt = group.UpdatedAt
+            };
+
+            return CreatedAtAction(nameof(GetAll), new { id = group.Id }, dto);
         }
+
 
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateGroupRequest req, CancellationToken ct = default)
