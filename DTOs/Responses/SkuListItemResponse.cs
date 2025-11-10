@@ -1,9 +1,9 @@
-
 namespace BAMF_API.DTOs.Responses;
 public class SkuListItemResponse
 {
     public string Sku { get; set; } = null!;
     public string ObjectId { get; set; } = null!;
+    public string? Slug { get; set; }      // Add slug for building group URLs
     public string GroupName { get; set; } = null!;
     public string MainCategory { get; set; } = null!;
     public string Color { get; set; } = null!;
