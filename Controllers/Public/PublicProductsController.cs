@@ -23,7 +23,7 @@ public class PublicProductsController : ControllerBase
 
     // SKU-first listing
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<DTOs.Responses.SkuListItemResponse>), 200)]
+    [ProducesResponseType(typeof(IEnumerable<SkuListItemResponse>), 200)]
     public async Task<IActionResult> List([FromQuery] PublicListQuery q, CancellationToken ct)
     {
         var variants = _db.Variants
@@ -72,7 +72,7 @@ public class PublicProductsController : ControllerBase
             return colorPrimary;
         }
 
-        var responses = new List<DTOs.Responses.SkuListItemResponse>();
+        var responses = new List<SkuListItemResponse>();
         foreach (var v in items)
         {
             var primary = ResolvePrimary(v);
@@ -80,11 +80,10 @@ public class PublicProductsController : ControllerBase
             var groupPath = $"/groups/{slugOrObject}?sku={Uri.EscapeDataString(v.Sku)}";
             var siblingsCount = await _db.Variants.CountAsync(x => x.ProductGroupId == v.ProductGroupId && !x.IsDeleted && x.Sku != v.Sku, ct);
 
-            responses.Add(new DTOs.Responses.SkuListItemResponse
+            responses.Add(new SkuListItemResponse
             {
                 Sku = v.Sku,
                 ObjectId = v.ProductGroup.ObjectId,
-                Slug = v.ProductGroup.Slug,
                 GroupName = v.ProductGroup.Name,
                 MainCategory = v.ProductGroup.Category.Name,
                 Color = v.Color,
