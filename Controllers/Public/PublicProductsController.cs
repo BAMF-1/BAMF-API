@@ -1,10 +1,8 @@
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using BAMF_API.Data;
 using BAMF_API.DTOs.Requests;
-using BAMF_API.DTOs.Responses;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BAMF_API.Controllers.Public;
 
@@ -82,6 +80,7 @@ public class PublicProductsController : ControllerBase
 
             responses.Add(new DTOs.Responses.SkuListItemResponse
             {
+                Id = v.Id,
                 Sku = v.Sku,
                 ObjectId = v.ProductGroup.ObjectId,
                 Slug = v.ProductGroup.Slug,

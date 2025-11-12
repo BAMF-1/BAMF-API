@@ -38,9 +38,23 @@ namespace BAMF_API.Repositories
             return await _context.Reviews.FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public async Task<IEnumerable<Review>> GetByItemIdAsync(int productId)
+        // Updated method
+        public async Task<IEnumerable<Review>> GetByProductGroupIdAsync(Guid productGroupId)
         {
-            return await _context.Reviews.Where(r => r.ProductId == productId).ToListAsync();
+            return await _context.Reviews
+                .Where(r => r.ProductGroupId == productGroupId)
+                .OrderByDescending(r => r.CreatedUtc)
+                .ToListAsync();
+        }
+
+        // New method - get reviews by slug
+        public async Task<IEnumerable<Review>> GetByProductGroupSlugAsync(string slug)
+        {
+            return await _context.Reviews
+                .Include(r => r.ProductGroup)
+                .Where(r => r.ProductGroup.Slug == slug)
+                .OrderByDescending(r => r.CreatedUtc)
+                .ToListAsync();
         }
 
         public async Task UpdateAsync(Review review)
