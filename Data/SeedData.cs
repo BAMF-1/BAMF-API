@@ -309,6 +309,7 @@ public static class SeedData
             db.SaveChanges();
         }
 
+        /*
         // Seed Legacy Products (if you still need the old Product table)
         if (!db.Products.Any())
         {
@@ -343,33 +344,8 @@ public static class SeedData
                 new ProductImage { ProductId = product2.Id, Url = "https://picsum.photos/seed/legacy2/600/600", AltText = "Legacy Adidas Jacket" }
             );
             db.SaveChanges();
-
-            // Reviews
-            db.Reviews.AddRange(
-                new Review
-                {
-                    ProductId = product1.Id,
-                    Rating = 5,
-                    Title = "Excellent shoes!",
-                    Comment = "Very comfortable and stylish. Perfect for running."
-                },
-                new Review
-                {
-                    ProductId = product1.Id,
-                    Rating = 4,
-                    Title = "Good quality",
-                    Comment = "Nice shoes, but a bit pricey."
-                },
-                new Review
-                {
-                    ProductId = product2.Id,
-                    Rating = 5,
-                    Title = "Love this jacket",
-                    Comment = "Great quality and fits perfectly!"
-                }
-            );
-            db.SaveChanges();
         }
+        */
 
         // Seed Sample Orders
         if (!db.Orders.Any())
@@ -413,6 +389,97 @@ public static class SeedData
                 );
                 db.SaveChanges();
             }
+        }
+
+        // Seed Reviews (Updated to use ProductGroups)
+        if (!db.Reviews.Any())
+        {
+            // Get the ProductGroups we created earlier
+            var nikeEssentialsPants = db.ProductGroups.First(pg => pg.Slug == "nike-essentials-pants");
+            var adidasTShirt = db.ProductGroups.First(pg => pg.Slug == "adidas-classic-tshirt");
+            var runningShoes = db.ProductGroups.First(pg => pg.Slug == "running-shoes-pro");
+            var sportCap = db.ProductGroups.First(pg => pg.Slug == "sport-cap-classic");
+
+            db.Reviews.AddRange(
+                // Reviews for Nike Essentials Pants
+                new Review
+                {
+                    ProductGroupId = nikeEssentialsPants.Id,
+                    Rating = 5,
+                    Title = "Perfect fit!",
+                    Comment = "These pants are amazing! Very comfortable and the material is high quality. I bought them in both red and black."
+                },
+                new Review
+                {
+                    ProductGroupId = nikeEssentialsPants.Id,
+                    Rating = 4,
+                    Title = "Great pants, small sizing",
+                    Comment = "Love the quality but they run a bit small. I'd recommend sizing up."
+                },
+                new Review
+                {
+                    ProductGroupId = nikeEssentialsPants.Id,
+                    Rating = 5,
+                    Title = "Excellent for workouts",
+                    Comment = "Very comfortable and stylish. Perfect for running and gym sessions."
+                },
+
+                // Reviews for Adidas Classic T-Shirt
+                new Review
+                {
+                    ProductGroupId = adidasTShirt.Id,
+                    Rating = 5,
+                    Title = "Love this shirt!",
+                    Comment = "Great quality and fits perfectly! The fabric is soft and breathable."
+                },
+                new Review
+                {
+                    ProductGroupId = adidasTShirt.Id,
+                    Rating = 4,
+                    Title = "Good value",
+                    Comment = "Nice shirt for the price. Washes well and holds its shape."
+                },
+
+                // Reviews for Running Shoes Pro
+                new Review
+                {
+                    ProductGroupId = runningShoes.Id,
+                    Rating = 5,
+                    Title = "Best running shoes!",
+                    Comment = "These shoes are incredibly comfortable. Great support and cushioning for long runs."
+                },
+                new Review
+                {
+                    ProductGroupId = runningShoes.Id,
+                    Rating = 4,
+                    Title = "Good quality",
+                    Comment = "Nice shoes, but a bit pricey. However, the quality justifies the cost."
+                },
+                new Review
+                {
+                    ProductGroupId = runningShoes.Id,
+                    Rating = 5,
+                    Title = "No regrets",
+                    Comment = "Worth every penny. My feet don't hurt after long runs anymore."
+                },
+
+                // Reviews for Sport Cap
+                new Review
+                {
+                    ProductGroupId = sportCap.Id,
+                    Rating = 5,
+                    Title = "Perfect cap",
+                    Comment = "Great fit and looks stylish. The one size fits all actually works!"
+                },
+                new Review
+                {
+                    ProductGroupId = sportCap.Id,
+                    Rating = 4,
+                    Title = "Nice accessory",
+                    Comment = "Good quality cap. The adjustable strap makes it comfortable for everyone."
+                }
+            );
+            db.SaveChanges();
         }
     }
 

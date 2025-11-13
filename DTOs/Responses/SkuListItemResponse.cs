@@ -2,6 +2,7 @@
 namespace BAMF_API.DTOs.Responses;
 public class SkuListItemResponse
 {
+    public Guid Id { get; set; }
     public string Sku { get; set; } = null!;
     public string ObjectId { get; set; } = null!;
     public string GroupName { get; set; } = null!;
