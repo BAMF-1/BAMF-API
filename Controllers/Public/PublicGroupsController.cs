@@ -1,15 +1,14 @@
 
-using BAMF_API.Data;
-using BAMF_API.DTOs.Responses;
-using BAMF_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using BAMF_API.Data;
+using BAMF_API.DTOs.Responses;
 using System.Linq;
 
 namespace BAMF_API.Controllers.Public;
 
 [ApiController]
-[Route("api/groups")]
+[Route("groups")]
 public class PublicGroupsController : ControllerBase
 {
     private readonly ApplicationDbContext _db;
@@ -23,20 +22,9 @@ public class PublicGroupsController : ControllerBase
         [FromQuery] string? sort = "price", [FromQuery] string? dir = "asc",
         [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
     {
-        ProductGroup? group;
-
-        if (Guid.TryParse(idOrSlug, out var guid))
-        {
-            group = await _db.ProductGroups
-                .Include(g => g.Category)
-                .FirstOrDefaultAsync(g => g.Id == guid, ct);
-        }
-        else
-        {
-            group = await _db.ProductGroups
-                .Include(g => g.Category)
-                .FirstOrDefaultAsync(g => g.Slug == idOrSlug || g.ObjectId == idOrSlug, ct);
-        }
+        var group = await _db.ProductGroups
+            .Include(g => g.Category)
+            .FirstOrDefaultAsync(g => (g.Slug == idOrSlug) || (g.ObjectId == idOrSlug), ct);
 
         if (group == null) return NotFound();
 
@@ -82,7 +70,6 @@ public class PublicGroupsController : ControllerBase
         var resp = new GroupPageResponse
         {
             ObjectId = group.ObjectId,
-            Slug = group.Slug,
             Name = group.Name,
             MainCategory = group.Category.Name,
             HeroImageUrl = list.Select(ResolvePrimary).FirstOrDefault() ?? await _db.ColorImages
