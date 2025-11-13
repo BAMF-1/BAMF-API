@@ -1,22 +1,23 @@
+using Azure.AI.OpenAI;
 using BAMF_API.Data;
+using BAMF_API.Exceptions;
 using BAMF_API.Interfaces;
 using BAMF_API.Interfaces.AdminInterfaces;
 using BAMF_API.Interfaces.AuthInterfaces;
+using BAMF_API.Interfaces.InventoryInterfaces;
 using BAMF_API.Interfaces.OrderInterfaces;
+using BAMF_API.Interfaces.ProductInterfaces;
 using BAMF_API.Interfaces.ReviewInterfaces;
 using BAMF_API.Interfaces.UserInterfaces;
-using BAMF_API.Interfaces.InventoryInterfaces;
-using BAMF_API.Interfaces.ProductInterfaces;
 using BAMF_API.Repositories;
 using BAMF_API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using Microsoft.AspNetCore.Diagnostics;
 using System.Text.Json;
-using BAMF_API.Exceptions;
 
 namespace BAMF_API
 {
@@ -112,6 +113,18 @@ namespace BAMF_API
             });
 
             builder.Services.AddAuthorization();
+
+            string endpoint = builder.Configuration["AZURE_OPENAI_ENDPOINT"];
+            string apiKey = builder.Configuration["AZURE_OPENAI_KEY"];
+
+            builder.Services.AddSingleton<AzureOpenAIClient>(sp =>
+            {
+                return new AzureOpenAIClient(
+                    new Uri(endpoint),
+                    new System.ClientModel.ApiKeyCredential(apiKey)
+                );
+            });
+
 
             // Add CORS
             builder.Services.AddCors(options =>

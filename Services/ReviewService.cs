@@ -6,68 +6,76 @@ namespace BAMF_API.Services
 {
     public class ReviewService : IReviewService
     {
-        private readonly IReviewRepository _ReviewRepo;
+        private readonly IReviewRepository _reviewRepo;
 
-        public ReviewService(IReviewRepository ReviewRepo)
+        public ReviewService(IReviewRepository reviewRepo)
         {
-            _ReviewRepo = ReviewRepo;
+            _reviewRepo = reviewRepo;
         }
 
         public async Task<IEnumerable<Review>> GetAllReviewsAsync(int page)
         {
-            return await _ReviewRepo.GetAllAsync(page);
+            return await _reviewRepo.GetAllAsync(page);
         }
 
         public async Task<int> GetReviewsCountAsync()
         {
-            return await _ReviewRepo.GetReviewsCountAsync();
+            return await _reviewRepo.GetReviewsCountAsync();
         }
 
         public async Task<Review?> GetReviewAsync(int id)
         {
-            return await _ReviewRepo.GetByIdAsync(id);
+            return await _reviewRepo.GetByIdAsync(id);
         }
 
-        public async Task<IEnumerable<Review>> GetReviewsByItemIdAsync(int productId)
+        // Updated method
+        public async Task<IEnumerable<Review>> GetReviewsByProductGroupIdAsync(Guid productGroupId)
         {
-            return await _ReviewRepo.GetByItemIdAsync(productId);
+            return await _reviewRepo.GetByProductGroupIdAsync(productGroupId);
+        }
+
+        // New method
+        public async Task<IEnumerable<Review>> GetReviewsByProductGroupSlugAsync(string slug)
+        {
+            return await _reviewRepo.GetByProductGroupSlugAsync(slug);
         }
 
         public async Task CreateReviewAsync(ReviewCreateDto dto)
         {
-            // TODO: Check for product before adding review, or it will throw error
             var review = new Review
             {
-                ProductId = dto.ProductId,
+                ProductGroupId = dto.ProductGroupId,  // Updated
                 Rating = dto.Rating,
                 Comment = dto.Comment,
                 Title = dto.Title
             };
-            await _ReviewRepo.CreateAsync(review);
+            await _reviewRepo.CreateAsync(review);
         }
 
         public async Task UpdateReviewAsync(int id, ReviewUpdateDto dto)
         {
-            // TODO: Check for product before updating review, or it will throw error
-            var existingReview = await _ReviewRepo.GetByIdAsync(id);
+            var existingReview = await _reviewRepo.GetByIdAsync(id);
             if (existingReview == null)
                 throw new Exception("Review not found");
+
             if (existingReview.Rating != dto.Rating)
                 existingReview.Rating = dto.Rating;
             if (!string.IsNullOrWhiteSpace(dto.Comment))
                 existingReview.Comment = dto.Comment;
             if (!string.IsNullOrEmpty(dto.Title))
                 existingReview.Title = dto.Title;
+
             existingReview.UpdatedUtc = DateTime.UtcNow;
-            await _ReviewRepo.UpdateAsync(existingReview);
+            await _reviewRepo.UpdateAsync(existingReview);
         }
 
         public async Task DeleteReviewAsync(int id)
         {
-            var existingReview = await _ReviewRepo.GetByIdAsync(id);
+            var existingReview = await _reviewRepo.GetByIdAsync(id);
             if (existingReview == null)
                 throw new Exception("Review not found");
-            await _ReviewRepo.DeleteAsync(id);
+
+            await _reviewRepo.DeleteAsync(id);
         }
     }
 }

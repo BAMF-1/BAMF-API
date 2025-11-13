@@ -16,7 +16,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [AllowAnonymous] // Everyone can see a specific review
+    [AllowAnonymous]
     public async Task<IActionResult> GetReview(int id)
     {
         var review = await _reviewService.GetReviewAsync(id);
@@ -24,17 +24,30 @@ public class ReviewsController : ControllerBase
         return Ok(review);
     }
 
-    [HttpGet("product/{productId}")]
-    [AllowAnonymous] // Everyone can see reviews for a product
-    public async Task<IActionResult> GetReviewsByProductId(int productId)
+    // New endpoint - Get reviews by ProductGroup slug
+    [HttpGet("product-group/{slug}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetReviewsBySlug(string slug)
     {
-        var reviews = await _reviewService.GetReviewsByItemIdAsync(productId);
-        if (reviews == null) return NotFound("This item has no reviews");
+        var reviews = await _reviewService.GetReviewsByProductGroupSlugAsync(slug);
+        if (reviews == null || !reviews.Any())
+            return NotFound("This product group has no reviews");
+        return Ok(reviews);
+    }
+
+    // Updated endpoint - Get reviews by ProductGroup ID
+    [HttpGet("product-group/id/{productGroupId}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetReviewsByProductGroupId(Guid productGroupId)
+    {
+        var reviews = await _reviewService.GetReviewsByProductGroupIdAsync(productGroupId);
+        if (reviews == null || !reviews.Any())
+            return NotFound("This product group has no reviews");
         return Ok(reviews);
     }
 
     [HttpGet]
-    [Authorize(Roles = "Admin")] // Only Admins can see all reviews (Moderation)
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllReviews(int page)
     {
         var reviews = await _reviewService.GetAllReviewsAsync(page);
@@ -43,7 +56,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpGet("count")]
-    [Authorize(Roles = "Admin")] // Only Admins can see review count of all items
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetReviewCount()
     {
         var count = await _reviewService.GetReviewsCountAsync();
@@ -51,7 +64,6 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpPost]
-    // Only authenticated users can create reviews
     public async Task<IActionResult> CreateReview([FromBody] ReviewCreateDto dto)
     {
         await _reviewService.CreateReviewAsync(dto);
@@ -59,7 +71,6 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    // Only Authenticated users can update reviews (Moderation and revisions)
     public async Task<IActionResult> UpdateReview(int id, ReviewUpdateDto dto)
     {
         await _reviewService.UpdateReviewAsync(id, dto);
@@ -67,7 +78,6 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    // Only Authenticated users can update reviews (Moderation and revisions)
     public async Task<IActionResult> DeleteReview(int id)
     {
         await _reviewService.DeleteReviewAsync(id);
