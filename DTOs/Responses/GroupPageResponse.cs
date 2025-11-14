@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 
 namespace BAMF_API.DTOs.Responses;
@@ -30,6 +29,9 @@ public class VariantItem
     public decimal Price { get; set; }
     public bool InStock { get; set; }
     public string? PrimaryImageUrl { get; set; }
+    public string? Description { get; set; }
+    public string? Brand { get; set; }
+    public string? Material { get; set; }
 }
 
 public class FacetItem

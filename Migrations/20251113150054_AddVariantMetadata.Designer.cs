@@ -4,6 +4,7 @@ using BAMF_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BAMF_API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251113150054_AddVariantMetadata")]
+    partial class AddVariantMetadata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,7 +48,7 @@ namespace BAMF_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Admins", (string)null);
+                    b.ToTable("Admins");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.Category", b =>
@@ -66,7 +69,7 @@ namespace BAMF_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.ColorImage", b =>
@@ -102,7 +105,7 @@ namespace BAMF_API.Migrations
 
                     b.HasIndex("ProductGroupId");
 
-                    b.ToTable("ColorImages", (string)null);
+                    b.ToTable("ColorImages");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.Inventory", b =>
@@ -133,7 +136,7 @@ namespace BAMF_API.Migrations
                     b.HasIndex("VariantId")
                         .IsUnique();
 
-                    b.ToTable("Inventories", (string)null);
+                    b.ToTable("Inventories");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.InventoryTransaction", b =>
@@ -165,7 +168,7 @@ namespace BAMF_API.Migrations
                     b.HasIndex("InventoryId", "TransactionType", "ReferenceId")
                         .HasDatabaseName("IX_InventoryTransaction_InventoryId_Type_Ref");
 
-                    b.ToTable("InventoryTransactions", (string)null);
+                    b.ToTable("InventoryTransactions");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.Order", b =>
@@ -204,7 +207,7 @@ namespace BAMF_API.Migrations
                     b.HasIndex("OrderNo")
                         .IsUnique();
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.OrderItem", b =>
@@ -238,7 +241,7 @@ namespace BAMF_API.Migrations
 
                     b.HasIndex("VariantId");
 
-                    b.ToTable("OrderItems", (string)null);
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.Product", b =>
@@ -287,7 +290,7 @@ namespace BAMF_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.ProductCategory", b =>
@@ -310,7 +313,7 @@ namespace BAMF_API.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductCategories", (string)null);
+                    b.ToTable("ProductCategories");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.ProductGroup", b =>
@@ -352,7 +355,7 @@ namespace BAMF_API.Migrations
                     b.HasIndex("ObjectId")
                         .IsUnique();
 
-                    b.ToTable("ProductGroups", (string)null);
+                    b.ToTable("ProductGroups");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.ProductImage", b =>
@@ -379,7 +382,7 @@ namespace BAMF_API.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages", (string)null);
+                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.Review", b =>
@@ -421,7 +424,7 @@ namespace BAMF_API.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.User", b =>
@@ -451,7 +454,7 @@ namespace BAMF_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.Variant", b =>
@@ -509,7 +512,7 @@ namespace BAMF_API.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_Variant_Sku");
 
-                    b.ToTable("Variants", (string)null);
+                    b.ToTable("Variants");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.VariantImage", b =>
@@ -540,7 +543,7 @@ namespace BAMF_API.Migrations
 
                     b.HasIndex("VariantId");
 
-                    b.ToTable("VariantImages", (string)null);
+                    b.ToTable("VariantImages");
                 });
 
             modelBuilder.Entity("BAMF_API.Models.ColorImage", b =>

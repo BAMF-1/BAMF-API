@@ -1,4 +1,3 @@
-
 using BAMF_API.Data;
 using BAMF_API.DTOs.Responses;
 using BAMF_API.Models;
@@ -102,7 +101,11 @@ public class PublicGroupsController : ControllerBase
                 Size = v.Size,
                 Price = v.Price,
                 InStock = v.Inventory.Quantity > 0,
-                PrimaryImageUrl = ResolvePrimary(v)
+                PrimaryImageUrl = ResolvePrimary(v),
+                // ADD METADATA FIELDS:
+                Description = v.Description,
+                Brand = v.Brand,
+                Material = v.Material
             }).ToList()
         };
 
