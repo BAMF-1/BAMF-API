@@ -108,18 +108,25 @@ namespace BAMF_API.Controllers.Admin
         }
 
         [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> Delete(Guid id, CancellationToken ct = default)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
         {
-            var group = await _db.ProductGroups
-                .Include(g => g.Variants)
-                .FirstOrDefaultAsync(g => g.Id == id, ct);
+            var exists = await _db.ProductGroups.AnyAsync(g => g.Id == id, ct);
+            if (!exists) return NotFound();
 
-            if (group == null) return NotFound();
-            if (group.Variants.Any(v => !v.IsDeleted))
-                return BadRequest("Delete or soft-delete variants first.");
+            await _db.Database.ExecuteSqlRawAsync(@"
+        DECLARE @VariantIds TABLE (Id UNIQUEIDENTIFIER)
+        INSERT INTO @VariantIds SELECT Id FROM Variants WHERE ProductGroupId = {0}
+        
+        DELETE FROM InventoryTransactions 
+        WHERE InventoryId IN (SELECT Id FROM Inventories WHERE VariantId IN (SELECT Id FROM @VariantIds))
+        
+        DELETE FROM Inventories WHERE VariantId IN (SELECT Id FROM @VariantIds)
+        DELETE FROM VariantImages WHERE VariantId IN (SELECT Id FROM @VariantIds)
+        DELETE FROM Variants WHERE ProductGroupId = {0}
+        DELETE FROM ColorImages WHERE ProductGroupId = {0}
+        DELETE FROM ProductGroups WHERE Id = {0}
+    ", id);
 
-            group.IsDeleted = true;
-            await _db.SaveChangesAsync(ct);
             return NoContent();
         }
 
