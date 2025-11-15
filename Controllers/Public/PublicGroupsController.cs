@@ -102,10 +102,21 @@ public class PublicGroupsController : ControllerBase
                 Price = v.Price,
                 InStock = v.Inventory.Quantity > 0,
                 PrimaryImageUrl = ResolvePrimary(v),
-                // ADD METADATA FIELDS:
                 Description = v.Description,
                 Brand = v.Brand,
-                Material = v.Material
+                Material = v.Material,
+                // NEW: Add images array for gallery
+                Images = v.VariantImages
+        .OrderBy(vi => vi.IsPrimary ? 0 : 1)
+        .ThenBy(vi => vi.SortOrder)
+        .Select(vi => new ImageItem
+        {
+            Url = vi.Url,
+            AltText = vi.AltText,
+            IsPrimary = vi.IsPrimary,
+            SortOrder = vi.SortOrder
+        })
+        .ToList()
             }).ToList()
         };
 
