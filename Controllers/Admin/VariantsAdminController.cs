@@ -1,4 +1,3 @@
-
 using BAMF_API.Data;
 using BAMF_API.DTOs.Requests;
 using BAMF_API.DTOs.Requests.AdminDashDTOs;
@@ -33,6 +32,9 @@ public class VariantsAdminController : ControllerBase
                 Price = x.Price,
                 InventoryQuantity = x.Inventory.Quantity,
                 LastRestockDate = x.Inventory.LastRestockDate,
+                Description = x.Description,
+                Brand = x.Brand,
+                Material = x.Material
             })
             .Paginate(page)
             .ToListAsync(ct);
@@ -60,7 +62,10 @@ public class VariantsAdminController : ControllerBase
             ProductGroupId = req.ProductGroupId,
             Color = req.Color,
             Size = req.Size,
-            Price = req.Price
+            Price = req.Price,
+            Description = req.Description,
+            Brand = req.Brand,
+            Material = req.Material
         };
         _db.Variants.Add(v);
         await _db.SaveChangesAsync(ct);
@@ -68,7 +73,22 @@ public class VariantsAdminController : ControllerBase
         _db.Inventories.Add(new Inventory { VariantId = v.Id, Quantity = 0, LowStockThreshold = 0 });
         await _db.SaveChangesAsync(ct);
 
-        return CreatedAtAction(nameof(ByGroup), new { groupId = v.ProductGroupId }, v);
+        // FIXED: Return a DTO with the variant data instead of CreatedAtAction
+        var dto = new VariantDto
+        {
+            Id = v.Id,
+            Sku = v.Sku,
+            Color = v.Color,
+            Size = v.Size,
+            Price = v.Price,
+            InventoryQuantity = 0,
+            LastRestockDate = null,
+            Description = v.Description,
+            Brand = v.Brand,
+            Material = v.Material
+        };
+
+        return Ok(dto);
     }
 
     [HttpPut("{id:guid}")]
@@ -79,17 +99,28 @@ public class VariantsAdminController : ControllerBase
         v.Color = req.Color;
         v.Size = req.Size;
         v.Price = req.Price;
+        v.Description = req.Description;
+        v.Brand = req.Brand;
+        v.Material = req.Material;
         await _db.SaveChangesAsync(ct);
         return NoContent();
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> SoftDelete(Guid id, CancellationToken ct)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {
-        var v = await _db.Variants.FindAsync(new object?[] { id }, ct);
-        if (v == null) return NotFound();
-        v.IsDeleted = TrueFalse(True: true);
-        await _db.SaveChangesAsync(ct);
+        var exists = await _db.Variants.AnyAsync(x => x.Id == id, ct);
+        if (!exists) return NotFound();
+
+        await _db.Database.ExecuteSqlRawAsync(@"
+        DELETE FROM InventoryTransactions 
+        WHERE InventoryId IN (SELECT Id FROM Inventories WHERE VariantId = {0})
+        
+        DELETE FROM VariantImages WHERE VariantId = {0}
+        DELETE FROM Inventories WHERE VariantId = {0}
+        DELETE FROM Variants WHERE Id = {0}
+     ", id);
+
         return NoContent();
     }
 
@@ -99,22 +130,18 @@ public class VariantsAdminController : ControllerBase
         var v = await _db.Variants.Include(x => x.Inventory).FirstOrDefaultAsync(x => x.Id == id, ct);
         if (v == null) return NotFound();
 
-        // ADD THIS: Check if Inventory exists
         if (v.Inventory == null)
         {
             return BadRequest("Inventory not found for this variant");
         }
 
-        // Update quantity
         v.Inventory.Quantity += req.Delta;
 
-        // Update last restock date
         if (req.TransactionType == InventoryTransactionType.Restock && req.Delta > 0)
         {
             v.Inventory.LastRestockDate = DateTimeOffset.UtcNow;
         }
 
-        // ADD THIS: Mark as modified explicitly
         _db.Entry(v.Inventory).Property(x => x.LastRestockDate).IsModified = true;
 
         _db.InventoryTransactions.Add(new InventoryTransaction
@@ -128,7 +155,6 @@ public class VariantsAdminController : ControllerBase
 
         await _db.SaveChangesAsync(ct);
 
-        // ADD THIS: Return the updated inventory to verify
         return Ok(new
         {
             success = true,
@@ -139,3 +165,15 @@ public class VariantsAdminController : ControllerBase
 
     private static bool TrueFalse(bool True = false) => True;
 }
+
+
+
+
+
+
+
+
+
+
+
+
