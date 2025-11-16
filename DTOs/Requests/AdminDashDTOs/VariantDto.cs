@@ -8,10 +8,12 @@
         public string Size { get; set; } = null!;
         public decimal Price { get; set; }
 
-        // Inventory info
         public int InventoryQuantity { get; set; }
         public int LowStockThreshold { get; set; }
         public DateTimeOffset? LastRestockDate { get; set; }
-    }
 
+        public string? Description { get; set; }
+        public string? Brand { get; set; }
+        public string? Material { get; set; }
+    }
 }

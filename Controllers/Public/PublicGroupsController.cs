@@ -1,4 +1,3 @@
-
 using BAMF_API.Data;
 using BAMF_API.DTOs.Responses;
 using BAMF_API.Models;
@@ -102,7 +101,22 @@ public class PublicGroupsController : ControllerBase
                 Size = v.Size,
                 Price = v.Price,
                 InStock = v.Inventory.Quantity > 0,
-                PrimaryImageUrl = ResolvePrimary(v)
+                PrimaryImageUrl = ResolvePrimary(v),
+                Description = v.Description,
+                Brand = v.Brand,
+                Material = v.Material,
+                // NEW: Add images array for gallery
+                Images = v.VariantImages
+        .OrderBy(vi => vi.IsPrimary ? 0 : 1)
+        .ThenBy(vi => vi.SortOrder)
+        .Select(vi => new ImageItem
+        {
+            Url = vi.Url,
+            AltText = vi.AltText,
+            IsPrimary = vi.IsPrimary,
+            SortOrder = vi.SortOrder
+        })
+        .ToList()
             }).ToList()
         };
 

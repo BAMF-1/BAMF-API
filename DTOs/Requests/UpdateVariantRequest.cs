@@ -1,8 +1,8 @@
-
 using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace BAMF_API.DTOs.Requests;
+
 public class UpdateVariantRequest
 {
     [Required, MaxLength(60)]
@@ -13,4 +13,13 @@ public class UpdateVariantRequest
 
     [Range(0, 9999999)]
     public decimal Price { get; set; }
+
+    [MaxLength(1000)]
+    public string? Description { get; set; }
+
+    [MaxLength(100)]
+    public string? Brand { get; set; }
+
+    [MaxLength(200)]
+    public string? Material { get; set; }
 }

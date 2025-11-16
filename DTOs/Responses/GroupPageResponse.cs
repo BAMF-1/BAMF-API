@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 
 namespace BAMF_API.DTOs.Responses;
@@ -21,6 +20,13 @@ public class GroupPageResponse
     public List<FacetItem> Sizes { get; set; } = new();
     public PriceFacet PriceFacet { get; set; } = new();
 }
+public class ImageItem
+{
+    public string Url { get; set; } = null!;
+    public string? AltText { get; set; }
+    public bool IsPrimary { get; set; }
+    public int SortOrder { get; set; }
+}
 
 public class VariantItem
 {
@@ -30,6 +36,10 @@ public class VariantItem
     public decimal Price { get; set; }
     public bool InStock { get; set; }
     public string? PrimaryImageUrl { get; set; }
+    public string? Description { get; set; }
+    public string? Brand { get; set; }
+    public string? Material { get; set; }
+    public List<ImageItem> Images { get; set; } = new();
 }
 
 public class FacetItem
