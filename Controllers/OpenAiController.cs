@@ -21,24 +21,6 @@
             _reviewService = reviewService;
         }
 
-        [HttpPost("chat")]
-        public async Task<IActionResult> Chat([FromBody] ChatRequest req)
-        {
-            var chatClient = _client.GetChatClient(_deploymentName);
-
-            var messages = req.Messages.Select<MessageDto, ChatMessage>(m => m.Role.ToLower() switch
-            {
-                "system" => new SystemChatMessage(m.Content),
-                "user" => new UserChatMessage(m.Content),
-                "assistant" => new AssistantChatMessage(m.Content),
-                _ => new UserChatMessage(m.Content)
-            }).ToList();
-
-            var response = await chatClient.CompleteChatAsync(messages);
-            var reply = response.Value.Content[0].Text;
-            return Ok(new { reply });
-        }
-
         // Updated endpoint - accepts slug instead of int productId
         [HttpGet("summarize/{slug}")]
         public async Task<IActionResult> SummarizeProductReviews(string slug)
@@ -54,7 +36,7 @@
             {
                 new MessageDto(
                     "system",
-                    "Summarize user-provided product reviews and rate the product 1–5 stars based on overall sentiment, credibility, and review trends over time."
+                    "Analyze the provided product reviews and generate a concise summary of the product's strengths, weaknesses, and overall user sentiment. Rate the product from 1 to 5 stars based on the aggregated sentiment of the reviews. Only reference older reviews if they are explicitly present, and highlight trends or changes in sentiment over time. Emphasize recurring patterns, credible details, and overall reliability of the product. Avoid mentioning older reviews if none are included in the data"
                 ),
                 new MessageDto(
                     "user",
