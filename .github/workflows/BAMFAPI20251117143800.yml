@@ -60,6 +60,12 @@ jobs:
       with:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+    - name: Debug - Check secrets presence
+      run: |
+        echo "Client ID present: ${{ secrets.AZUREAPPSERVICE_CLIENTID != '' }}"
+        echo "Tenant ID present: ${{ secrets.AZUREAPPSERVICE_TENANTID != '' }}"
+        echo "Subscription ID present: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID != '' }}"
     
     - name: Azure Login
       uses: azure/login@v2
