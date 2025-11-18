@@ -382,7 +382,8 @@ namespace BAMF_API
                         {
                             policy.WithOrigins(
                                 "http://localhost:3000",
-                                "https://localhost:7039"
+                                "https://localhost:7039",
+                                "https://bamf-gear-h5a3f7dvc9ffbxhr.germanywestcentral-01.azurewebsites.net/"
                             )
                             .AllowAnyHeader()
                             .AllowAnyMethod()
@@ -415,51 +416,8 @@ namespace BAMF_API
                 app.MapGet("/", () => Results.Ok(new
                 {
                     message = "BAMF API is running",
-                    endpoints = new[] { "/health", "/swagger", "/api/products" }
+                    endpoints = new[] { "/api/products" }
                 }));
-
-                // Temporary migration endpoints - REMOVE AFTER USE
-                app.MapGet("/admin/migrate", async (ApplicationDbContext db) =>
-                {
-                    try
-                    {
-                        Console.WriteLine("Starting database migration...");
-                        await db.Database.MigrateAsync();
-                        Console.WriteLine("Database migration completed successfully");
-                        return Results.Ok(new
-                        {
-                            success = true,
-                            message = "Database migrated successfully",
-                            timestamp = DateTime.UtcNow
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Migration failed: {ex.Message}");
-                        return Results.Problem($"Migration failed: {ex.Message}\n\nStack trace: {ex.StackTrace}");
-                    }
-                });
-
-                app.MapGet("/admin/seed", (ApplicationDbContext db) =>
-                {
-                    try
-                    {
-                        Console.WriteLine("Starting database seeding...");
-                        SeedData.EnsureSeeded(db);
-                        Console.WriteLine("Database seeded successfully");
-                        return Results.Ok(new
-                        {
-                            success = true,
-                            message = "Database seeded successfully",
-                            timestamp = DateTime.UtcNow
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Seeding failed: {ex.Message}");
-                        return Results.Problem($"Seeding failed: {ex.Message}\n\nStack trace: {ex.StackTrace}");
-                    }
-                });
 
                 // Global exception handler
                 app.UseExceptionHandler(builder =>
@@ -503,16 +461,6 @@ namespace BAMF_API
                         throw ex!;
                     });
                 });
-
-                // SKIP DATABASE MIGRATION ON STARTUP - Do it manually later
-                Console.WriteLine("Skipping database migration on startup");
-                // Commented out to prevent startup crashes:
-                // using (var scope = app.Services.CreateScope())
-                // {
-                //     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                //     db.Database.Migrate();
-                //     SeedData.EnsureSeeded(db);
-                // }
 
                 Console.WriteLine("=== Starting App ===");
                 app.Run();
