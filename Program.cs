@@ -383,7 +383,7 @@ namespace BAMF_API
                             policy.WithOrigins(
                                 "http://localhost:3000",
                                 "https://localhost:7039",
-                                "https://bamf-gear-h5a3f7dvc9ffbxhr.germanywestcentral-01.azurewebsites.net/"
+                                "https://bamf-gear-h5a3f7dvc9ffbxhr.germanywestcentral-01.azurewebsites.net"
                             )
                             .AllowAnyHeader()
                             .AllowAnyMethod()
