@@ -210,6 +210,7 @@ namespace BAMF_API
             }
 
             app.Run();
+
         }
     }
 }
