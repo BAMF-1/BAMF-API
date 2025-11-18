@@ -3,6 +3,22 @@
   "WorkspaceRootPath": "C:\\Users\\fredr\\source\\repos\\BAMF-API\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{7BF36C61-3EE0-45BE-86FC-E668E7345BA3}|BAMF_API.csproj|c:\\users\\fredr\\source\\repos\\bamf-api\\web.config||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{7BF36C61-3EE0-45BE-86FC-E668E7345BA3}|BAMF_API.csproj|solutionrelative:web.config||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BF36C61-3EE0-45BE-86FC-E668E7345BA3}|BAMF_API.csproj|c:\\users\\fredr\\source\\repos\\bamf-api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{7BF36C61-3EE0-45BE-86FC-E668E7345BA3}|BAMF_API.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BF36C61-3EE0-45BE-86FC-E668E7345BA3}|BAMF_API.csproj|c:\\users\\fredr\\source\\repos\\bamf-api\\controllers\\public\\publicproductscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7BF36C61-3EE0-45BE-86FC-E668E7345BA3}|BAMF_API.csproj|solutionrelative:controllers\\public\\publicproductscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BF36C61-3EE0-45BE-86FC-E668E7345BA3}|BAMF_API.csproj|c:\\users\\fredr\\source\\repos\\bamf-api\\controllers\\public\\publicvariantscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7BF36C61-3EE0-45BE-86FC-E668E7345BA3}|BAMF_API.csproj|solutionrelative:controllers\\public\\publicvariantscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{7BF36C61-3EE0-45BE-86FC-E668E7345BA3}|BAMF_API.csproj|c:\\users\\fredr\\source\\repos\\bamf-api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7BF36C61-3EE0-45BE-86FC-E668E7345BA3}|BAMF_API.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
@@ -19,12 +35,64 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "web.config",
+              "DocumentMoniker": "C:\\Users\\fredr\\source\\repos\\BAMF-API\\web.config",
+              "RelativeDocumentMoniker": "web.config",
+              "ToolTip": "C:\\Users\\fredr\\source\\repos\\BAMF-API\\web.config",
+              "RelativeToolTip": "web.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2025-11-18T07:32:58.518Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\fredr\\source\\repos\\BAMF-API\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\fredr\\source\\repos\\BAMF-API\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAABLAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-11-18T06:49:56.992Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PublicProductsController.cs",
+              "DocumentMoniker": "C:\\Users\\fredr\\source\\repos\\BAMF-API\\Controllers\\Public\\PublicProductsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\Public\\PublicProductsController.cs",
+              "ToolTip": "C:\\Users\\fredr\\source\\repos\\BAMF-API\\Controllers\\Public\\PublicProductsController.cs",
+              "RelativeToolTip": "Controllers\\Public\\PublicProductsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-18T06:44:30.04Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "PublicVariantsController.cs",
+              "DocumentMoniker": "C:\\Users\\fredr\\source\\repos\\BAMF-API\\Controllers\\Public\\PublicVariantsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\Public\\PublicVariantsController.cs",
+              "ToolTip": "C:\\Users\\fredr\\source\\repos\\BAMF-API\\Controllers\\Public\\PublicVariantsController.cs",
+              "RelativeToolTip": "Controllers\\Public\\PublicVariantsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-18T06:44:25.582Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\fredr\\source\\repos\\BAMF-API\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\fredr\\source\\repos\\BAMF-API\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAlAAAAAAAAAA==",
+              "ViewState": "AgIAALgAAAAAAAAAAAAcwMkAAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-17T13:35:21.248Z",
               "EditorCaption": ""
