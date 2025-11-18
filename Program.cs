@@ -418,6 +418,49 @@ namespace BAMF_API
                     endpoints = new[] { "/health", "/swagger", "/api/products" }
                 }));
 
+                // Temporary migration endpoints - REMOVE AFTER USE
+                app.MapGet("/admin/migrate", async (ApplicationDbContext db) =>
+                {
+                    try
+                    {
+                        Console.WriteLine("Starting database migration...");
+                        await db.Database.MigrateAsync();
+                        Console.WriteLine("Database migration completed successfully");
+                        return Results.Ok(new
+                        {
+                            success = true,
+                            message = "Database migrated successfully",
+                            timestamp = DateTime.UtcNow
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Migration failed: {ex.Message}");
+                        return Results.Problem($"Migration failed: {ex.Message}\n\nStack trace: {ex.StackTrace}");
+                    }
+                });
+
+                app.MapGet("/admin/seed", (ApplicationDbContext db) =>
+                {
+                    try
+                    {
+                        Console.WriteLine("Starting database seeding...");
+                        SeedData.EnsureSeeded(db);
+                        Console.WriteLine("Database seeded successfully");
+                        return Results.Ok(new
+                        {
+                            success = true,
+                            message = "Database seeded successfully",
+                            timestamp = DateTime.UtcNow
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Seeding failed: {ex.Message}");
+                        return Results.Problem($"Seeding failed: {ex.Message}\n\nStack trace: {ex.StackTrace}");
+                    }
+                });
+
                 // Global exception handler
                 app.UseExceptionHandler(builder =>
                 {
