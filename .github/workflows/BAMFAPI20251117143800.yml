@@ -22,8 +22,7 @@ env:
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 8.0.x
 
-  WORKING_DIRECTORY: ./BAMF_API       # <-- FIXED
-  TEST_DIRECTORY: ./BAMF_TESTS        # <-- ADDED
+  WORKING_DIRECTORY: ./
 
 jobs:
   build:
@@ -44,7 +43,7 @@ jobs:
       run: dotnet build BAMF_API.sln --configuration ${{ env.CONFIGURATION }} --no-restore
 
     - name: Test
-      run: dotnet test ${{ env.TEST_DIRECTORY }} --no-build
+      run: dotnet test ${{ env.WORKING_DIRECTORY }} --no-build
 
     - name: Publish API project
       run: dotnet publish ${{ env.WORKING_DIRECTORY }} --configuration ${{ env.CONFIGURATION }} --no-build --output ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
