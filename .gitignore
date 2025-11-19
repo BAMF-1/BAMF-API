@@ -1,2 +1,19 @@
-node_modules/
-.env
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.rsuser
+
+# VS files
+.vs/
+.vscode/
+
+# Logs
+*.log
+
+# Secrets
+appsettings.Development.json
+appsettings.Local.json
