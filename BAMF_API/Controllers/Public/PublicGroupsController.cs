@@ -3,7 +3,6 @@ using BAMF_API.DTOs.Responses;
 using BAMF_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace BAMF_API.Controllers.Public;
 
@@ -72,7 +71,7 @@ public class PublicGroupsController : ControllerBase
             if (!string.IsNullOrEmpty(skuPrimary)) return skuPrimary;
             var colorPrimary = _db.ColorImages.Where(ci => ci.ProductGroupId == v.ProductGroupId && ci.Color == v.Color && ci.IsPrimary)
                                               .OrderBy(ci => ci.SortOrder).Select(ci => ci.Url).FirstOrDefault();
-            return colorPrimary;
+            return colorPrimary ?? string.Empty;
         }
 
         var globalMin = await _db.Variants.Where(v => v.ProductGroupId == group.Id && !v.IsDeleted).MinAsync(v => v.Price, ct);

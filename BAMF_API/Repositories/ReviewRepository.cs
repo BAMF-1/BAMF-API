@@ -52,7 +52,7 @@ namespace BAMF_API.Repositories
         {
             return await _context.Reviews
                 .Include(r => r.ProductGroup)
-                .Where(r => r.ProductGroup.Slug == slug)
+                .Where(r => r.ProductGroup != null && r.ProductGroup.Slug == slug)
                 .OrderByDescending(r => r.CreatedUtc)
                 .ToListAsync();
         }

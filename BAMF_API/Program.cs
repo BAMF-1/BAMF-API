@@ -254,7 +254,6 @@ namespace BAMF_API
             {
                 // Add DbContext
                 var connString = builder.Configuration.GetConnectionString("DefaultConnection");
-                Console.WriteLine($"Connection String exists: {!string.IsNullOrEmpty(connString)}");
 
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(connString));
@@ -324,10 +323,6 @@ namespace BAMF_API
                 var jwtKey = jwt["Key"];
                 var jwtIssuer = jwt["Issuer"];
                 var jwtAudience = jwt["Audience"];
-
-                Console.WriteLine($"JWT Key exists: {!string.IsNullOrEmpty(jwtKey)}");
-                Console.WriteLine($"JWT Issuer: {jwtIssuer}");
-                Console.WriteLine($"JWT Audience: {jwtAudience}");
 
                 if (string.IsNullOrEmpty(jwtKey) || string.IsNullOrEmpty(jwtIssuer) || string.IsNullOrEmpty(jwtAudience))
                 {

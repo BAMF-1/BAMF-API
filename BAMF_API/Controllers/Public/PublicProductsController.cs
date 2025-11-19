@@ -60,14 +60,14 @@ public class PublicProductsController : ControllerBase
             .Take(pageSize)
             .ToListAsync(ct);
 
-        // Resolve primary image (SKU override or color-level)
+        // Replace the method signature and return type of ResolvePrimary to ensure it never returns null.
         string ResolvePrimary(BAMF_API.Models.Variant v)
         {
             var skuPrimary = v.VariantImages.Where(i => i.IsPrimary).OrderBy(i => i.SortOrder).Select(i => i.Url).FirstOrDefault();
             if (!string.IsNullOrEmpty(skuPrimary)) return skuPrimary;
             var colorPrimary = _db.ColorImages.Where(ci => ci.ProductGroupId == v.ProductGroupId && ci.Color == v.Color && ci.IsPrimary)
                                               .OrderBy(ci => ci.SortOrder).Select(ci => ci.Url).FirstOrDefault();
-            return colorPrimary;
+            return colorPrimary ?? string.Empty;
         }
 
         var responses = new List<DTOs.Responses.SkuListItemResponse>();

@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BAMF_API.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using BAMF_API.Models;
 
 namespace BAMF_API.Data
 {
@@ -32,10 +32,12 @@ namespace BAMF_API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // ValueConverter to normalize SKU on save (Trim + UpperInvariant).
+            // Change the lambda to avoid returning null, since the property is required and should not be null.
+            // Instead, return string.Empty if v is null.
             var skuConverter = new ValueConverter<string, string>(
-                v => v == null ? null : v.Trim().ToUpperInvariant(),
-                v => v);
+                v => string.IsNullOrWhiteSpace(v) ? string.Empty : v.Trim().ToUpperInvariant(),
+                v => v
+            );
 
             modelBuilder.Entity<Variant>(b =>
             {
