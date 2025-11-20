@@ -421,9 +421,16 @@ namespace BAMF_API
 
                     db.Database.EnsureDeleted();
                     db.Database.Migrate();
-                    SeedData.EnsureSeeded(db);
 
-                    return Results.Ok("Database was reset and seeded");
+                    return Results.Ok("Database was reset");
+                });
+
+                app.MapPost("/admin/seed-db", (IServiceProvider sp) =>
+                {
+                    using var scope = sp.CreateScope();
+                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    SeedData.EnsureSeeded(db);
+                    return Results.Ok("Database was seeded");
                 });
 
 
