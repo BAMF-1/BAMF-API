@@ -37,7 +37,7 @@ jobs:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
 
     - name: Restore
-      run: dotnet restore BAMF_API.sln      # <-- safest universal option
+      run: dotnet restore BAMF_API.sln
 
     - name: Build
       run: dotnet build BAMF_API.sln --configuration ${{ env.CONFIGURATION }} --no-restore
@@ -48,11 +48,14 @@ jobs:
     - name: Publish API project
       run: dotnet publish ${{ env.WORKING_DIRECTORY }} --configuration ${{ env.CONFIGURATION }} --no-build --output ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
-    - name: Generate Swagger JSON
-      run: |
-        dotnet tool install -g Swashbuckle.AspNetCore.Cli
-        dotnet swagger tofile --output swagger.json ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/BAMF_API.dll v1
-      continue-on-error: true
+    # -----------------------------
+    # DISABLED — AI-related Swagger generation
+    # -----------------------------
+    # - name: Generate Swagger JSON
+    #   run: |
+    #     dotnet tool install -g Swashbuckle.AspNetCore.Cli
+    #     dotnet swagger tofile --output swagger.json ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/BAMF_API.dll v1
+    #   continue-on-error: true
 
     - name: Publish Artifacts
       uses: actions/upload-artifact@v4
@@ -60,12 +63,15 @@ jobs:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
-    - name: Upload Swagger JSON
-      uses: actions/upload-artifact@v4
-      with:
-        name: swagger
-        path: swagger.json
-      if: always()
+    # -----------------------------
+    # DISABLED — Swagger upload
+    # -----------------------------
+    # - name: Upload Swagger JSON
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: swagger
+    #     path: swagger.json
+    #   if: always()
 
   deploy:
     runs-on: windows-latest
@@ -78,12 +84,15 @@ jobs:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
-    - name: Download Swagger JSON
-      uses: actions/download-artifact@v4
-      with:
-        name: swagger
-        path: ./swagger
-      continue-on-error: true
+    # -----------------------------
+    # DISABLED — Swagger download
+    # -----------------------------
+    # - name: Download Swagger JSON
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: swagger
+    #     path: ./swagger
+    #   continue-on-error: true
 
     - name: Azure Login
       uses: azure/login@v2
@@ -98,22 +107,25 @@ jobs:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
-    - name: Import API into API Management
-      shell: pwsh
-      run: |
-        if (Test-Path "./swagger/swagger.json") {
-          az apim api import `
-            --path "${{ env.AZURE_APIM_RESOURCE_PATH }}" `
-            --resource-group "${{ env.AZURE_APIM_RESOURCEGROUP }}" `
-            --service-name "${{ env.AZURE_APIM_SERVICENAME }}" `
-            --api-id "${{ env.AZURE_APIM_API_ID }}" `
-            --service-url "${{ env.AZURE_APIM_APPSERVICEURL }}" `
-            --specification-path "./swagger/swagger.json" `
-            --specification-format OpenApi `
-            --subscription-required false
-        } else {
-          Write-Host "Swagger file not found, skipping API import"
-        }
+    # -----------------------------
+    # DISABLED — APIM import
+    # -----------------------------
+    # - name: Import API into API Management
+    #   shell: pwsh
+    #   run: |
+    #     if (Test-Path "./swagger/swagger.json") {
+    #       az apim api import `
+    #         --path "${{ env.AZURE_APIM_RESOURCE_PATH }}" `
+    #         --resource-group "${{ env.AZURE_APIM_RESOURCEGROUP }}" `
+    #         --service-name "${{ env.AZURE_APIM_SERVICENAME }}" `
+    #         --api-id "${{ env.AZURE_APIM_API_ID }}" `
+    #         --service-url "${{ env.AZURE_APIM_APPSERVICEURL }}" `
+    #         --specification-path "./swagger/swagger.json" `
+    #         --specification-format OpenApi `
+    #         --subscription-required false
+    #     } else {
+    #       Write-Host "Swagger file not found, skipping API import"
+    #     }
 
     - name: logout
       run: az logout

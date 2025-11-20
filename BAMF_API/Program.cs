@@ -350,24 +350,24 @@ namespace BAMF_API
                 builder.Services.AddAuthorization();
 
                 // Azure OpenAI - Optional
-                string? endpoint = builder.Configuration["AZURE_OPENAI_ENDPOINT"];
-                string? apiKey = builder.Configuration["AZURE_OPENAI_KEY"];
+                //string? endpoint = builder.Configuration["AZURE_OPENAI_ENDPOINT"];
+                //string? apiKey = builder.Configuration["AZURE_OPENAI_KEY"];
 
-                if (!string.IsNullOrEmpty(endpoint) && !string.IsNullOrEmpty(apiKey))
-                {
-                    builder.Services.AddSingleton<AzureOpenAIClient>(sp =>
-                    {
-                        return new AzureOpenAIClient(
-                            new Uri(endpoint),
-                            new System.ClientModel.ApiKeyCredential(apiKey)
-                        );
-                    });
-                    Console.WriteLine("Azure OpenAI configured");
-                }
-                else
-                {
-                    Console.WriteLine("Azure OpenAI not configured - skipping");
-                }
+                //if (!string.IsNullOrEmpty(endpoint) && !string.IsNullOrEmpty(apiKey))
+                //{
+                //    builder.Services.AddSingleton<AzureOpenAIClient>(sp =>
+                //    {
+                //        return new AzureOpenAIClient(
+                //            new Uri(endpoint),
+                //            new System.ClientModel.ApiKeyCredential(apiKey)
+                //        );
+                //    });
+                //    Console.WriteLine("Azure OpenAI configured");
+                //}
+                //else
+                //{
+                //    Console.WriteLine("Azure OpenAI not configured - skipping");
+                //}
 
                 // Add CORS
                 builder.Services.AddCors(options =>
@@ -413,6 +413,19 @@ namespace BAMF_API
                     message = "BAMF API is running",
                     endpoints = new[] { "/api/products" }
                 }));
+
+                app.MapPost("/admin/reset-db", (IServiceProvider sp) =>
+                {
+                    using var scope = sp.CreateScope();
+                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                    db.Database.EnsureDeleted();
+                    db.Database.Migrate();
+                    SeedData.EnsureSeeded(db);
+
+                    return Results.Ok("Database was reset and seeded");
+                });
+
 
                 // Global exception handler
                 app.UseExceptionHandler(builder =>
