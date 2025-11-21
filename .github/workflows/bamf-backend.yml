@@ -1,8 +1,15 @@
 name: Build and deploy .NET Core application to Web App bamf-backend with API Management Service BAMFAPIapi-BAMFAPI
+
 on:
   push:
     branches:
     - main
+
+# Add this permissions block for OIDC authentication
+permissions:
+  id-token: write
+  contents: read
+
 env:
   AZURE_WEBAPP_NAME: bamf-backend
   AZURE_WEBAPP_PACKAGE_PATH: BAMF_API\publish
@@ -19,6 +26,7 @@ env:
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 8.0.x
   WORKING_DIRECTORY: BAMF_API
+
 jobs:
   build:
     runs-on: windows-latest
@@ -48,6 +56,7 @@ jobs:
       with:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
   deploy:
     runs-on: windows-latest
     needs: build
@@ -69,11 +78,6 @@ jobs:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
     - name: Import API into Azure API Management
-      run: az apim api import --path "${{ env.AZURE_APIM_RESOURCE_PATH }}" --resource-group "${{ env.AZURE_APIM_RESOURCEGROUP }}" --service-name "${{ env.AZURE_APIM_SERVICENAME }}" --api-id "${{ env.AZURE_APIM_API_ID }}" --service-url "${{ env.AZURE_APIM_APPSERVICEURL }}" --specification-path "${{ env.API_IMPORT_SPECIFICATION_PATH }}" --specification-format 
+      run: az apim api import --path "${{ env.AZURE_APIM_RESOURCE_PATH }}" --resource-group "${{ env.AZURE_APIM_RESOURCEGROUP }}" --service-name "${{ env.AZURE_APIM_SERVICENAME }}" --api-id "${{ env.AZURE_APIM_API_ID }}" --service-url "${{ env.AZURE_APIM_APPSERVICEURL }}" --specification-path "${{ env.API_IMPORT_SPECIFICATION_PATH }}" --specification-format OpenApi
     - name: logout
-      run: >
-        az logout
-
-#OpenApi --subscription-required false
-# - name: Generate Open API Specification Document
-#   run: swagger tofile --output "${{ env.API_IMPORT_SPECIFICATION_PATH }}" "${{ env.API_IMPORT_DLL }}" "${{ env.API_IMPORT_VERSION }}"
+      run: az logout
