@@ -44,6 +44,20 @@ public static class SeedData
             db.SaveChanges();
         }
 
+        // Seed Categories
+        if (!db.Categories.Any())
+        {
+            var categories = new List<Category>
+            {
+                new Category { Name = "Bottoms" },
+                new Category { Name = "Tops" },
+                new Category { Name = "Accessories" },
+                new Category { Name = "Footwear" }
+            };
+            db.Categories.AddRange(categories);
+            db.SaveChanges();
+        }
+
     }
     private static void CreatePasswordHash(string password, out string hash, out string salt)
     {

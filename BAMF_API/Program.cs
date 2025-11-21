@@ -199,16 +199,16 @@ namespace BAMF_API
                     }
                 }));
 
-                app.MapPost("/admin/reset-db", (IServiceProvider sp) =>
-                {
-                    using var scope = sp.CreateScope();
-                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                //app.MapPost("/admin/reset-db", (IServiceProvider sp) =>
+                //{
+                //    using var scope = sp.CreateScope();
+                //    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                    db.Database.EnsureDeleted();
-                    db.Database.Migrate();
+                //    db.Database.EnsureDeleted();
+                //    db.Database.Migrate();
 
-                    return Results.Ok("Database was reset");
-                });
+                //    return Results.Ok("Database was reset");
+                //});
 
                 app.MapPost("/admin/seed-db", (IServiceProvider sp) =>
                 {
