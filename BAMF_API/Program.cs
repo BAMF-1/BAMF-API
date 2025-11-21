@@ -411,7 +411,11 @@ namespace BAMF_API
                 app.MapGet("/", () => Results.Ok(new
                 {
                     message = "BAMF API is running",
-                    endpoints = new[] { "/api/products" }
+                    endpoints = new[] { 
+                        "/api/products",
+                        "/admin/reset-db",
+                        "/admin/seed-db",
+                    }
                 }));
 
                 app.MapPost("/admin/reset-db", (IServiceProvider sp) =>
