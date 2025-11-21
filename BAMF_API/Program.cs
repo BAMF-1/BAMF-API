@@ -195,7 +195,7 @@ namespace BAMF_API
                     endpoints = new[] { 
                         "/api/products",
                         //"/admin/reset-db",
-                        //"/admin/seed-db",
+                        "/admin/seed-db",
                     }
                 }));
 
