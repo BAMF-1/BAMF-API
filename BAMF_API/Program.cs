@@ -378,7 +378,7 @@ namespace BAMF_API
                             policy.WithOrigins(
                                 "http://localhost:3000",
                                 "https://localhost:7039",
-                                "https://bamf-gear-h5a3f7dvc9ffbxhr.germanywestcentral-01.azurewebsites.net"
+                                "https://bamf-react-aedac9f5ckbbfmcm.norwayeast-01.azurewebsites.net"
                             )
                             .AllowAnyHeader()
                             .AllowAnyMethod()
@@ -413,29 +413,29 @@ namespace BAMF_API
                     message = "BAMF API is running",
                     endpoints = new[] { 
                         "/api/products",
-                        "/admin/reset-db",
-                        "/admin/seed-db",
+                        //"/admin/reset-db",
+                        //"/admin/seed-db",
                     }
                 }));
 
-                app.MapPost("/admin/reset-db", (IServiceProvider sp) =>
-                {
-                    using var scope = sp.CreateScope();
-                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                //app.MapPost("/admin/reset-db", (IServiceProvider sp) =>
+                //{
+                //    using var scope = sp.CreateScope();
+                //    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                    db.Database.EnsureDeleted();
-                    db.Database.Migrate();
+                //    db.Database.EnsureDeleted();
+                //    db.Database.Migrate();
 
-                    return Results.Ok("Database was reset");
-                });
+                //    return Results.Ok("Database was reset");
+                //});
 
-                app.MapPost("/admin/seed-db", (IServiceProvider sp) =>
-                {
-                    using var scope = sp.CreateScope();
-                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                    SeedData.EnsureSeeded(db);
-                    return Results.Ok("Database was seeded");
-                });
+                //app.MapPost("/admin/seed-db", (IServiceProvider sp) =>
+                //{
+                //    using var scope = sp.CreateScope();
+                //    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                //    SeedData.EnsureSeeded(db);
+                //    return Results.Ok("Database was seeded");
+                //});
 
 
                 // Global exception handler
