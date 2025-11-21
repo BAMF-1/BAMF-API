@@ -9,8 +9,6 @@ public static class SeedData
 {
     public static void EnsureSeeded(ApplicationDbContext db)
     {
-        db.Database.Migrate();
-
         // Seed Admins
         if (!db.Admins.Any())
         {
@@ -45,16 +43,13 @@ public static class SeedData
         }
 
         // Seed Categories
-        if (!db.Categories.Any())
-        {
-            var categories = new List<Category>
-            {
-                new Category { Name = "Bottoms" },
-                new Category { Name = "Tops" },
-                new Category { Name = "Accessories" },
-                new Category { Name = "Footwear" }
-            };
-            db.Categories.AddRange(categories);
+        if (!db.Categories.Any()){
+            db.Categories.AddRange(
+                new Category { Name = "Tops", Slug = "tops" },
+                new Category { Name = "Bottoms", Slug = "bottoms" },
+                new Category { Name = "Shoes", Slug = "shoes" },
+                new Category { Name = "Accessories", Slug = "accessories" }
+            );
             db.SaveChanges();
         }
 
