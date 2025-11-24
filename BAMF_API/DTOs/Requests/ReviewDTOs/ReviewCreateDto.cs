@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 namespace BAMF_API.DTOs.Requests.ReviewDTOs
 {
     public class ReviewCreateDto
     {
-        public Guid ProductGroupId { get; set; }
+        [Required]
+        public string ProductGroupSlug { get; set; } = string.Empty;
 
         [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5.")]
         public int Rating { get; set; }

@@ -45,6 +45,7 @@ namespace BAMF_API
                 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
                 builder.Services.AddScoped<IReviewService, ReviewService>();
                 builder.Services.AddScoped<IInventoryService, InventoryService>();
+                builder.Services.AddScoped<IProductGroupRepository, ProductGroupRepository>();
 
                 builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
                 builder.Services.AddScoped<IInventoryTransactionRepository, InventoryTransactionRepository>();

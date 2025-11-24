@@ -1,10 +1,19 @@
 ﻿namespace BAMF_API.Controllers
 {
-    using Azure.AI.OpenAI;
+    //using Azure.AI.OpenAI;
+    //using OpenAI.Chat;
+    // using System.Text.Json;
+
     using BAMF_API.Interfaces.ReviewInterfaces;
     using Microsoft.AspNetCore.Mvc;
-    using OpenAI.Chat;
-    using System.Text.Json;
+    using System.Linq;
+
+    public record RatingDistributionDto(int Stars, int Count, double Percentage);
+    public record ReviewSummaryDto(
+        double AverageRating,
+        int TotalReviews,
+        List<RatingDistributionDto> RatingDistribution
+    );
 
     [ApiController]
     [Route("api/[controller]")]
@@ -21,30 +30,59 @@
             _reviewService = reviewService;
         }
 
-        // Updated endpoint - accepts slug instead of int productId
         [HttpGet("summarize/{slug}")]
         public async Task<IActionResult> SummarizeProductReviews(string slug)
         {
-            // Get real reviews (still needed so endpoint behaves normally)
             var reviews = await _reviewService.GetReviewsByProductGroupSlugAsync(slug);
 
             if (reviews == null || !reviews.Any())
                 return NotFound($"No reviews found for product group: {slug}");
 
-            // TEMPORARY FAKE RESPONSE (REMOVE LATER)
-            var fakeSummary = new
-            {
-                summary = $"This is a temporary fake summary for product group '{slug}'. " +
-                          "Strengths: good build quality, solid performance. " +
-                          "Weaknesses: slightly high price. Overall users are satisfied.",
-                rating = 4,
-                isFake = true
-            };
+            // --- START: NON-AI STATISTICAL SUMMARY LOGIC (Replaced TEMPORARY FAKE RESPONSE) ---
 
-            return Ok(fakeSummary);
+            int totalReviews = reviews.Count();
+
+            // 1. Calculate Average Rating
+            double averageRating = reviews.Average(r => r.Rating);
+
+            // 2. Calculate Rating Distribution
+            var ratingDistribution = reviews
+                .GroupBy(r => r.Rating)
+                .Select(g => new RatingDistributionDto(
+                    Stars: g.Key,
+                    Count: g.Count(),
+                    Percentage: (double)g.Count() / totalReviews // Calculate the percentage
+                ))
+                .ToList();
+
+            // Ensure all 5 star levels (1-5) are present, even if count is zero
+            var existingStars = ratingDistribution.Select(d => d.Stars).ToHashSet();
+            for (int i = 1; i <= 5; i++)
+            {
+                if (!existingStars.Contains(i))
+                {
+                    ratingDistribution.Add(new RatingDistributionDto(i, 0, 0.0));
+                }
+            }
+            // Sort to ensure presentation order (e.g., 5 down to 1)
+            ratingDistribution = ratingDistribution.OrderByDescending(d => d.Stars).ToList();
+
+
+            // 3. Construct the final summary object
+            var reviewSummary = new ReviewSummaryDto(
+                AverageRating: Math.Round(averageRating, 2), // Round to 2 decimal places
+                TotalReviews: totalReviews,
+                RatingDistribution: ratingDistribution
+            );
+
+            // Return the calculated summary
+            return Ok(reviewSummary);
+
+            // --- END: NON-AI STATISTICAL SUMMARY LOGIC ---
+
 
             /*
-            // ---------------- REAL API CALL (DISABLED TEMPORARILY) ----------------
+            // ---------------- REAL AI API CALL (DISABLED TEMPORARILY) ----------------
             var reviewJson = JsonSerializer.Serialize(reviews);
 
             var messages = new List<MessageDto>
@@ -72,8 +110,9 @@
             */
         }
 
-
-        public record ChatRequest(List<MessageDto> Messages);
-        public record MessageDto(string Role, string Content);
+        // The original DTOs for the AI request are no longer needed for this function, 
+        // but can be kept commented out or removed based on future plans.
+        // public record ChatRequest(List<MessageDto> Messages);
+        // public record MessageDto(string Role, string Content);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BAMF_API.DTOs.Requests.ReviewDTOs;
+using BAMF_API.Interfaces.ProductInterfaces;
 using BAMF_API.Interfaces.ReviewInterfaces;
 using BAMF_API.Models;
 using BAMF_API.Services;
@@ -10,12 +11,15 @@ namespace BAMF_API.Tests.Services
     public class ReviewServiceTests
     {
         private readonly Mock<IReviewRepository> _repoMock;
+        private readonly Mock<IProductGroupRepository> _productGroupRepoMock = new Mock<IProductGroupRepository>();
         private readonly ReviewService _service;
 
         public ReviewServiceTests()
         {
             _repoMock = new Mock<IReviewRepository>();
-            _service = new ReviewService(_repoMock.Object);
+            _productGroupRepoMock = new Mock<IProductGroupRepository>();
+
+            _service = new ReviewService(_repoMock.Object, _productGroupRepoMock.Object);
         }
 
         [Fact]
@@ -84,24 +88,35 @@ namespace BAMF_API.Tests.Services
         }
 
         [Fact]
-        // Tests that CreateReviewAsync calls the repository create method
-        public async Task CreateReviewAsync_ShouldCallRepoCreate()
+        public async Task CreateReviewAsync_ShouldCallRepoCreate_WithResolvedId()
         {
+            var slug = "awesome-product-slug";
+            var expectedGroupId = Guid.NewGuid();
+
             var dto = new ReviewCreateDto
             {
-                ProductGroupId = Guid.NewGuid(),
-                Rating = 4,
-                Title = "New Review",
-                Comment = "Nice!"
+                ProductGroupSlug = slug,
+                Rating = 5,
+                Title = "Great",
+                Comment = "Loved it"
             };
 
-            await _service.CreateReviewAsync(dto);
+            var productRepoMock = new Mock<IProductGroupRepository>();
+
+            productRepoMock.Setup(x => x.GetBySlugOrObjectIdAsync(slug, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ProductGroup
+                {
+                    Id = expectedGroupId,
+                    Slug = slug
+                });
+
+            var service = new ReviewService(_repoMock.Object, productRepoMock.Object);
+
+            await service.CreateReviewAsync(dto);
 
             _repoMock.Verify(r => r.CreateAsync(It.Is<Review>(rev =>
-                rev.Title == "New Review" &&
-                rev.Rating == 4 &&
-                rev.Comment == "Nice!" &&
-                rev.ProductGroupId == dto.ProductGroupId
+                rev.ProductGroupId == expectedGroupId &&
+                rev.Title == "Great"
             )), Times.Once);
         }
 

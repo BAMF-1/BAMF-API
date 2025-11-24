@@ -1,4 +1,5 @@
 ﻿using BAMF_API.DTOs.Requests.ReviewDTOs;
+using BAMF_API.Interfaces.ProductInterfaces;
 using BAMF_API.Interfaces.ReviewInterfaces;
 using BAMF_API.Models;
 
@@ -7,10 +8,12 @@ namespace BAMF_API.Services
     public class ReviewService : IReviewService
     {
         private readonly IReviewRepository _reviewRepo;
+        private readonly IProductGroupRepository _productGroupRepo;
 
-        public ReviewService(IReviewRepository reviewRepo)
+        public ReviewService(IReviewRepository reviewRepo, IProductGroupRepository productGroupRepo)
         {
             _reviewRepo = reviewRepo;
+            _productGroupRepo = productGroupRepo;
         }
 
         public async Task<IEnumerable<Review>> GetAllReviewsAsync(int page)
@@ -42,13 +45,22 @@ namespace BAMF_API.Services
 
         public async Task CreateReviewAsync(ReviewCreateDto dto)
         {
+            var productGroup = await _productGroupRepo.GetBySlugOrObjectIdAsync(dto.ProductGroupSlug);
+
+            if (productGroup == null)
+            {
+                throw new KeyNotFoundException($"Product Group with slug '{dto.ProductGroupSlug}' was not found.");
+            }
+
             var review = new Review
             {
-                ProductGroupId = dto.ProductGroupId,  // Updated
+                ProductGroupId = productGroup.Id,
                 Rating = dto.Rating,
+                Title = dto.Title,
                 Comment = dto.Comment,
-                Title = dto.Title
+                CreatedUtc = DateTime.UtcNow
             };
+
             await _reviewRepo.CreateAsync(review);
         }
 
